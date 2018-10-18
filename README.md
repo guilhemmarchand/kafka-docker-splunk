@@ -25,7 +25,6 @@ This template will the same infrastructure in docker except the Splunk instance,
 - Zookeeper cluster (3 nodes)
 - Kafka broker cluster (3 nodes)
 - Kafka connect cluster (3 nodes)
-- Splunk standalone instance pre-configured (login: admin / password: ch@ngeM3)
 - Kafka LinkedIn monitor container
 - A Telegraf container collecting metrics from Zookeeper and Kafka brokers
 - A Telegraf container collecting metrics from LinkedIn Kafka monitor
