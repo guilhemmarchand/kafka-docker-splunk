@@ -183,7 +183,7 @@ services:
       - kafka-2
       - kafka-3
     volumes:
-      - ../telegraf/telegraf-kafka-brokers.conf:/etc/telegraf/telegraf.conf:ro
+      - ../telegraf/telegraf-kafka-brokers-dockerhost.conf:/etc/telegraf/telegraf.conf:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /sys:/rootfs/sys:ro
       - /proc:/rootfs/proc:ro
@@ -205,7 +205,7 @@ services:
       - kafka-2
       - kafka-3
     volumes:
-      - ../telegraf/telegraf-kafka-connect.conf:/etc/telegraf/telegraf.conf:ro
+      - ../telegraf/telegraf-kafka-connect-dockerhost.conf:/etc/telegraf/telegraf.conf:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /sys:/rootfs/sys:ro
       - /proc:/rootfs/proc:ro
