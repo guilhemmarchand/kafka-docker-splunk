@@ -13,7 +13,7 @@ This template will run:
 - Zookeeper cluster (3 nodes)
 - Kafka broker cluster (3 nodes)
 - Kafka connect cluster (3 nodes)
-- Splunk standalone instance pre-configured (login: admin / password: ch@ngeM3)
+- Splunk standalone instance pre-configured (login: admin / password: ch@ngeM3) with port redirected to your localhost
 - Kafka LinkedIn monitor container
 - A Telegraf container collecting metrics from Zookeeper and Kafka brokers
 - A Telegraf container collecting metrics from LinkedIn Kafka monitor
@@ -58,9 +58,15 @@ cd template_docker_splunk_ondocker
 
 Docker will download any image required, and the start the full environment.
 
+Splunk requires around 30 seconds to start, you can verify the instance state:
+
+```
+docker-compose logs splunk
+```
+
 Once Splunk has been started, you can access to Splunk Web:
 
-http://splunk:8000
+http://localhost:8000
 
 - login: admin
 - password: ch@ngeM3
