@@ -18,6 +18,8 @@ sleep 10
 
 for container in kafka-connect-1 kafka-connect-2 kafka-connect-3; do
   docker-compose start $container
+  echo "Sleeping 5s..."
+  sleep 5
 done
 
 echo "Sleeping 10s..."
@@ -26,4 +28,3 @@ sleep 10
 docker-compose start
 
 exit 0
-

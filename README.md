@@ -16,6 +16,7 @@ This template will run:
 - Splunk standalone instance pre-configured (login: admin / password: ch@ngeM3) with port redirected to your localhost
 - Kafka LinkedIn monitor container
 - A Telegraf container collecting metrics from Zookeeper and Kafka brokers
+- A Telegraf container collecting metrics from Kafka Connect
 - A Telegraf container collecting metrics from LinkedIn Kafka monitor
 
 ### template_docker_splunk_localhost
@@ -27,6 +28,7 @@ This template will the same infrastructure in docker except the Splunk instance,
 - Kafka connect cluster (3 nodes)
 - Kafka LinkedIn monitor container
 - A Telegraf container collecting metrics from Zookeeper and Kafka brokers
+- A Telegraf container collecting metrics from Kafka Connect
 - A Telegraf container collecting metrics from LinkedIn Kafka monitor
 
 Notes:
@@ -87,4 +89,3 @@ Recommendation: Install the Metrics Workspace application in Splunk:
 https://splunkbase.splunk.com/app/4192/
 
 ![screen1](./img/screen001.png)
-

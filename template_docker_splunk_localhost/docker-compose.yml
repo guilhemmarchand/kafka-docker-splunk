@@ -109,6 +109,7 @@ services:
     hostname: kafka-connect-1
     ports:
       - "18082:18082"
+      - "18779:18779"
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -117,8 +118,11 @@ services:
       - kafka-2
       - kafka-3
     volumes:
+      - ../jolokia:/opt/jolokia
       - ../splunk-kafka-connect/jars:/etc/kafka-connect/jars
       - ../splunk-kafka-connect/config:/etc/kafka-connect/config
+    environment:
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18779,host=0.0.0.0"
     command: "/usr/bin/connect-distributed /etc/kafka-connect/config/connect-distributed.properties-kafka-connect-1"
 
   kafka-connect-2:
@@ -126,6 +130,7 @@ services:
     hostname: kafka-connect-2
     ports:
       - "28082:28082"
+      - "28779:28779"
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -134,8 +139,11 @@ services:
       - kafka-2
       - kafka-3
     volumes:
+      - ../jolokia:/opt/jolokia
       - ../splunk-kafka-connect/jars:/etc/kafka-connect/jars
       - ../splunk-kafka-connect/config:/etc/kafka-connect/config
+    environment:
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=28779,host=0.0.0.0"
     command: "/usr/bin/connect-distributed /etc/kafka-connect/config/connect-distributed.properties-kafka-connect-2"
 
   kafka-connect-3:
@@ -143,6 +151,7 @@ services:
     hostname: kafka-connect-3
     ports:
       - "38082:38082"
+      - "38779:38779"
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -151,8 +160,11 @@ services:
       - kafka-2
       - kafka-3
     volumes:
+      - ../jolokia:/opt/jolokia
       - ../splunk-kafka-connect/jars:/etc/kafka-connect/jars
       - ../splunk-kafka-connect/config:/etc/kafka-connect/config
+    environment:
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=38779,host=0.0.0.0"
     command: "/usr/bin/connect-distributed /etc/kafka-connect/config/connect-distributed.properties-kafka-connect-3"
 
   telegraf-kafka-brokers:
@@ -162,7 +174,7 @@ services:
       HOST_PROC: /rootfs/proc
       HOST_SYS: /rootfs/sys
       HOST_ETC: /rootfs/etc
-    hostname: telegraf-docker
+    hostname: telegraf-kafka-brokers
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -171,7 +183,29 @@ services:
       - kafka-2
       - kafka-3
     volumes:
-      - ../telegraf/telegraf-kafka-brokers-dockerhost.conf:/etc/telegraf/telegraf.conf:ro
+      - ../telegraf/telegraf-kafka-brokers.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/rootfs/sys:ro
+      - /proc:/rootfs/proc:ro
+      - /etc:/rootfs/etc:ro
+
+  telegraf-kafka-connect:
+    image: telegraf:latest
+    restart: always
+    environment:
+      HOST_PROC: /rootfs/proc
+      HOST_SYS: /rootfs/sys
+      HOST_ETC: /rootfs/etc
+    hostname: telegraf-kafka-connect
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    volumes:
+      - ../telegraf/telegraf-kafka-connect.conf:/etc/telegraf/telegraf.conf:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /sys:/rootfs/sys:ro
       - /proc:/rootfs/proc:ro
