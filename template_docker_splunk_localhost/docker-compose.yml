@@ -1,0 +1,216 @@
+version: '2'
+services:
+
+  dockerhost:
+    image: qoomon/docker-host
+    cap_add: [ 'NET_ADMIN', 'NET_RAW' ]
+    mem_limit: 4M
+    restart: on-failure
+  dummy:
+    image: bash
+    command: ["ping" , "dockerhost"]
+
+  zookeeper-1:
+    image: confluentinc/cp-zookeeper:latest
+    hostname: zookeeper-1
+    ports:
+      - "12181:12181"
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 12181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zookeeper-1:12888:13888;zookeeper-2:22888:23888;zookeeper-3:32888:33888
+
+  zookeeper-2:
+    image: confluentinc/cp-zookeeper:latest
+    hostname: zookeeper-2
+    ports:
+      - "22181:22181"
+    depends_on:
+      - zookeeper-1
+    environment:
+      ZOOKEEPER_SERVER_ID: 2
+      ZOOKEEPER_CLIENT_PORT: 22181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zookeeper-1:12888:13888;zookeeper-2:22888:23888;zookeeper-3:32888:33888
+
+  zookeeper-3:
+    image: confluentinc/cp-zookeeper:latest
+    hostname: zookeeper-3
+    ports:
+      - "32181:32181"
+    depends_on:
+      - zookeeper-2
+    environment:
+      ZOOKEEPER_SERVER_ID: 3
+      ZOOKEEPER_CLIENT_PORT: 32181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zookeeper-1:12888:13888;zookeeper-2:22888:23888;zookeeper-3:32888:33888
+
+  kafka-1:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka-1
+    ports:
+      - "19092:19092"
+      - "18778:18778"
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+    volumes:
+      - ../jolokia:/opt/jolokia
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:12181,zookeeper-2:12181,zookeeper-3:12181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:19092
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18778,host=0.0.0.0"
+ 
+  kafka-2:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka-2
+    ports:
+      - "29092:29092"
+      - "28778:28778"
+    depends_on:
+      - kafka-1
+    volumes:
+      - ../jolokia:/opt/jolokia
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:12181,zookeeper-2:12181,zookeeper-3:12181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:29092
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=28778,host=0.0.0.0"
+ 
+  kafka-3:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka-3
+    ports:
+      - "39092:39092"
+      - "38778:38778"
+    depends_on:
+      - kafka-1
+      - kafka-2
+    volumes:
+      - ../jolokia:/opt/jolokia
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:12181,zookeeper-2:12181,zookeeper-3:12181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:39092
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=38778,host=0.0.0.0"
+
+  kafka-connect-1:
+    image: confluentinc/cp-kafka-connect:latest
+    hostname: kafka-connect-1
+    ports:
+      - "18082:18082"
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    volumes:
+      - ../splunk-kafka-connect/jars:/etc/kafka-connect/jars
+      - ../splunk-kafka-connect/config:/etc/kafka-connect/config
+    command: "/usr/bin/connect-distributed /etc/kafka-connect/config/connect-distributed.properties-kafka-connect-1"
+
+  kafka-connect-2:
+    image: confluentinc/cp-kafka-connect:latest
+    hostname: kafka-connect-2
+    ports:
+      - "28082:28082"
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    volumes:
+      - ../splunk-kafka-connect/jars:/etc/kafka-connect/jars
+      - ../splunk-kafka-connect/config:/etc/kafka-connect/config
+    command: "/usr/bin/connect-distributed /etc/kafka-connect/config/connect-distributed.properties-kafka-connect-2"
+
+  kafka-connect-3:
+    image: confluentinc/cp-kafka-connect:latest
+    hostname: kafka-connect-3
+    ports:
+      - "38082:38082"
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    volumes:
+      - ../splunk-kafka-connect/jars:/etc/kafka-connect/jars
+      - ../splunk-kafka-connect/config:/etc/kafka-connect/config
+    command: "/usr/bin/connect-distributed /etc/kafka-connect/config/connect-distributed.properties-kafka-connect-3"
+
+  telegraf-kafka-brokers:
+    image: telegraf:latest
+    restart: always
+    environment:
+      HOST_PROC: /rootfs/proc
+      HOST_SYS: /rootfs/sys
+      HOST_ETC: /rootfs/etc
+    hostname: telegraf-docker
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    volumes:
+      - ../telegraf/telegraf-kafka-brokers-dockerhost.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/rootfs/sys:ro
+      - /proc:/rootfs/proc:ro
+      - /etc:/rootfs/etc:ro
+
+  telegraf-kafka-monitor:
+    image: telegraf:latest
+    restart: always
+    environment:
+      HOST_PROC: /rootfs/proc
+      HOST_SYS: /rootfs/sys
+      HOST_ETC: /rootfs/etc
+    hostname: telegraf-docker
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    volumes:
+      - ../telegraf/telegraf-kafka-monitor-dockerhost.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/rootfs/sys:ro
+      - /proc:/rootfs/proc:ro
+      - /etc:/rootfs/etc:ro
+
+  kafka-monitor:
+    image: guilhemmarchand/kafka-monitor:latest
+    hostname: kafka-monitor
+    ports:
+      - "8778:8778"
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    volumes:
+      - ../kafka-monitor:/usr/local/share/kafka-monitor
+    command: "/opt/kafka-monitor/bin/kafka-monitor-start.sh /usr/local/share/kafka-monitor/kafka-monitor.properties"
