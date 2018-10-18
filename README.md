@@ -76,3 +76,14 @@ To destroy the environment:
 ```
 ./destroy.sh
 ```
+
+Verify metrics ingestion in Splunk:
+
+```
+| mcatalog values(metric_name) as metric_name, values(_dims) where index=telegraf_kafka
+```
+
+Recommendation: Install the Metrics Workspace application in Splunk:
+
+https://splunkbase.splunk.com/app/4192/
+
