@@ -87,5 +87,5 @@ Recommendation: Install the Metrics Workspace application in Splunk:
 
 https://splunkbase.splunk.com/app/4192/
 
-![screen1](./docs/img/screen001.png)
+![screen1](./img/screen001.png)
 
