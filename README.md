@@ -18,7 +18,9 @@ limitations under the License.
 
 This repository contains simple configuration templates that will run a full Kafka environment in Docker.
 
-Two templates are provides:
+![screen1](./docs/img/draw.io/docker_template.png)
+
+Two templates are provided:
 
 ### template_docker_splunk_ondocker
 
