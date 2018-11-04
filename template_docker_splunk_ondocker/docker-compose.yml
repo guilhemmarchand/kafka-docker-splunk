@@ -158,6 +158,24 @@ services:
       KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=38779,host=0.0.0.0"
     command: "/usr/bin/connect-distributed /etc/kafka-connect/config/connect-distributed.properties-kafka-connect-3"
 
+  schema-registry:
+    image: confluentinc/cp-schema-registry:latest
+    hostname: schema-registry
+    ports:
+      - "8081:8081"
+      - "18783:18783"
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    volumes:
+      - ../jolokia:/opt/jolokia
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper-1:12181,zookeeper-2:12181,zookeeper-3:12181
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
+      SCHEMA_REGISTRY_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18783,host=0.0.0.0"
+
   telegraf-kafka-brokers:
     image: telegraf:latest
     restart: always
@@ -197,6 +215,28 @@ services:
       - kafka-3
     volumes:
       - ../telegraf/telegraf-kafka-connect.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/rootfs/sys:ro
+      - /proc:/rootfs/proc:ro
+      - /etc:/rootfs/etc:ro
+
+  telegraf-kafka-schema-registry:
+    image: telegraf:latest
+    restart: always
+    environment:
+      HOST_PROC: /rootfs/proc
+      HOST_SYS: /rootfs/sys
+      HOST_ETC: /rootfs/etc
+    hostname: telegraf-kafka-schema-registry
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    volumes:
+      - ../telegraf/telegraf-kafka-schema-registry.conf:/etc/telegraf/telegraf.conf:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /sys:/rootfs/sys:ro
       - /proc:/rootfs/proc:ro
