@@ -1,0 +1,9 @@
+See https://www.confluent.io/connector/kafka-connect-datagen
+
+https://github.com/confluentinc/kafka-connect-datagen
+
+wget https://github.com/confluentinc/kafka-connect-datagen/raw/master/config/connector_pageviews_cos.config
+curl localhost:18082/connectors -X POST -H "Content-Type: application/json" -d@connector_users_cos.config
+
+wget https://github.com/confluentinc/kafka-connect-datagen/raw/master/config/connector_users_cos.config
+curl localhost:18082/connectors -X POST -H "Content-Type: application/json" -d@connector_pageviews_cos.config

@@ -110,8 +110,9 @@ services:
       - kafka-3
     volumes:
       - ../jolokia:/opt/jolokia
-      - ../splunk-kafka-connect/jars:/etc/kafka-connect/jars
-      - ../splunk-kafka-connect/config:/etc/kafka-connect/config
+      - ../splunk-kafka-connect:/etc/kafka-connect/splunk-kafka-connect
+      - ../kafka-connect-datagen/confluentinc-kafka-connect-datagen-0.1.0:/etc/kafka-connect/jars/confluentinc-kafka-connect-datagen
+      - ../kafka-connect:/etc/kafka-connect/config
     environment:
       KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18779,host=0.0.0.0"
     command: "/usr/bin/connect-distributed /etc/kafka-connect/config/connect-distributed.properties-kafka-connect-1"
@@ -131,8 +132,9 @@ services:
       - kafka-3
     volumes:
       - ../jolokia:/opt/jolokia
-      - ../splunk-kafka-connect/jars:/etc/kafka-connect/jars
-      - ../splunk-kafka-connect/config:/etc/kafka-connect/config
+      - ../splunk-kafka-connect:/etc/kafka-connect/splunk-kafka-connect
+      - ../kafka-connect-datagen/confluentinc-kafka-connect-datagen-0.1.0:/etc/kafka-connect/jars/confluentinc-kafka-connect-datagen
+      - ../kafka-connect:/etc/kafka-connect/config
     environment:
       KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=28779,host=0.0.0.0"
     command: "/usr/bin/connect-distributed /etc/kafka-connect/config/connect-distributed.properties-kafka-connect-2"
@@ -152,8 +154,9 @@ services:
       - kafka-3
     volumes:
       - ../jolokia:/opt/jolokia
-      - ../splunk-kafka-connect/jars:/etc/kafka-connect/jars
-      - ../splunk-kafka-connect/config:/etc/kafka-connect/config
+      - ../splunk-kafka-connect:/etc/kafka-connect/splunk-kafka-connect
+      - ../kafka-connect-datagen/confluentinc-kafka-connect-datagen-0.1.0:/etc/kafka-connect/jars/confluentinc-kafka-connect-datagen
+      - ../kafka-connect:/etc/kafka-connect/config
     environment:
       KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=38779,host=0.0.0.0"
     command: "/usr/bin/connect-distributed /etc/kafka-connect/config/connect-distributed.properties-kafka-connect-3"
