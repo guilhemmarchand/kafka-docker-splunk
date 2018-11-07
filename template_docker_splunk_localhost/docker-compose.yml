@@ -119,7 +119,7 @@ services:
       - kafka-3
     volumes:
       - ../jolokia:/opt/jolokia
-      - ../splunk-kafka-connect:/etc/kafka-connect/splunk-kafka-connect
+      - ../splunk-kafka-connect:/etc/kafka-connect/jars/splunk-kafka-connect
       - ../kafka-connect-datagen/confluentinc-kafka-connect-datagen-0.1.0:/etc/kafka-connect/jars/confluentinc-kafka-connect-datagen
       - ../kafka-connect:/etc/kafka-connect/config
     environment:
@@ -141,7 +141,7 @@ services:
       - kafka-3
     volumes:
       - ../jolokia:/opt/jolokia
-      - ../splunk-kafka-connect:/etc/kafka-connect/splunk-kafka-connect
+      - ../splunk-kafka-connect:/etc/kafka-connect/jars/splunk-kafka-connect
       - ../kafka-connect-datagen/confluentinc-kafka-connect-datagen-0.1.0:/etc/kafka-connect/jars/confluentinc-kafka-connect-datagen
       - ../kafka-connect:/etc/kafka-connect/config
     environment:
@@ -163,7 +163,7 @@ services:
       - kafka-3
     volumes:
       - ../jolokia:/opt/jolokia
-      - ../splunk-kafka-connect:/etc/kafka-connect/splunk-kafka-connect
+      - ../splunk-kafka-connect:/etc/kafka-connect/jars/splunk-kafka-connect
       - ../kafka-connect-datagen/confluentinc-kafka-connect-datagen-0.1.0:/etc/kafka-connect/jars/confluentinc-kafka-connect-datagen
       - ../kafka-connect:/etc/kafka-connect/config
     environment:
