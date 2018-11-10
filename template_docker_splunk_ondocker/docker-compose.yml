@@ -165,7 +165,7 @@ services:
     image: confluentinc/cp-schema-registry:latest
     hostname: schema-registry
     ports:
-      - "8081:8081"
+      - "18081:8081"
       - "18783:18783"
     depends_on:
       - kafka-1
@@ -271,7 +271,7 @@ services:
     image: guilhemmarchand/kafka-monitor:latest
     hostname: kafka-monitor
     ports:
-      - "8778:8778"
+      - "18884:8778"
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -296,3 +296,4 @@ services:
       SPLUNK_PASSWORD: "ch@ngeM3"
     volumes:
       - ../splunk/TA-telegraf-kafka:/opt/splunk/etc/apps/TA-telegraf-kafka
+      - ../splunk/container_share:/opt/splunk/container_share

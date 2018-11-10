@@ -30,3 +30,5 @@ backups
 # spl
 *.spl
 
+# container_share
+splunk/container_share/*.tgz

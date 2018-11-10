@@ -174,7 +174,7 @@ services:
     image: confluentinc/cp-schema-registry:latest
     hostname: schema-registry
     ports:
-      - "8081:8081"
+      - "18081:8081"
       - "18783:18783"
     depends_on:
       - kafka-1
@@ -280,7 +280,7 @@ services:
     image: guilhemmarchand/kafka-monitor:latest
     hostname: kafka-monitor
     ports:
-      - "8778:8778"
+      - "18884:8778"
     depends_on:
       - zookeeper-1
       - zookeeper-2
