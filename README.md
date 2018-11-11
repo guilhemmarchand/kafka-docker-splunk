@@ -92,12 +92,6 @@ http://localhost:8000
 - login: admin
 - password: ch@ngeM3
 
-To destroy the environment:
-
-```
-./destroy.sh
-```
-
 Verify metrics ingestion in Splunk:
 
 ```
@@ -110,4 +104,13 @@ https://splunkbase.splunk.com/app/4192/
 
 ![screen1](./img/screen001.png)
 
+Transfer files between host and container:
+
 You can use the splunk/container_share directory to share files with the splunk docker container (in /opt/splunk/container_share) for ease.
+
+To destroy the environment:
+
+```
+./destroy.sh
+```
+
