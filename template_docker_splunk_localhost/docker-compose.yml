@@ -365,7 +365,7 @@ services:
                        cub sr-ready schema-registry 18081 20 && \
                        echo Waiting a few seconds for topic creation to finish... && \
                        sleep 2 && \
-                       /opt/kafka-streams/run.sh'"
+                       /etc/confluent/docker/run'"
     ports:
       - '7070:7070'
     environment:
