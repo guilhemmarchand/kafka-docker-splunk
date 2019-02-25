@@ -113,6 +113,7 @@ services:
     ports:
       - "18082:18082"
       - "18779:18779"
+      - "5514:5514"
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -124,6 +125,7 @@ services:
       - ../jolokia:/opt/jolokia
       - ../splunk-kafka-connect:/etc/kafka-connect/jars/splunk-kafka-connect
       - ../kafka-connect-datagen/confluentinc-kafka-connect-datagen-0.1.0:/etc/kafka-connect/jars/confluentinc-kafka-connect-datagen
+      - ../kafka-connect-syslog/confluentinc-kafka-connect-syslog:/etc/kafka-connect/jars/confluentinc-kafka-connect-syslog
       - ../kafka-connect:/etc/kafka-connect/config
     environment:
       KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18779,host=0.0.0.0"
@@ -135,6 +137,7 @@ services:
     ports:
       - "28082:28082"
       - "28779:28779"
+      - "5515:5515"
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -146,6 +149,7 @@ services:
       - ../jolokia:/opt/jolokia
       - ../splunk-kafka-connect:/etc/kafka-connect/jars/splunk-kafka-connect
       - ../kafka-connect-datagen/confluentinc-kafka-connect-datagen-0.1.0:/etc/kafka-connect/jars/confluentinc-kafka-connect-datagen
+      - ../kafka-connect-syslog/confluentinc-kafka-connect-syslog:/etc/kafka-connect/jars/confluentinc-kafka-connect-syslog
       - ../kafka-connect:/etc/kafka-connect/config
     environment:
       KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=28779,host=0.0.0.0"
@@ -157,6 +161,7 @@ services:
     ports:
       - "38082:38082"
       - "38779:38779"
+      - "5516:5516"
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -168,6 +173,7 @@ services:
       - ../jolokia:/opt/jolokia
       - ../splunk-kafka-connect:/etc/kafka-connect/jars/splunk-kafka-connect
       - ../kafka-connect-datagen/confluentinc-kafka-connect-datagen-0.1.0:/etc/kafka-connect/jars/confluentinc-kafka-connect-datagen
+      - ../kafka-connect-syslog/confluentinc-kafka-connect-syslog:/etc/kafka-connect/jars/confluentinc-kafka-connect-syslog
       - ../kafka-connect:/etc/kafka-connect/config
     environment:
       KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=38779,host=0.0.0.0"
@@ -190,6 +196,45 @@ services:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:18081"
       SCHEMA_REGISTRY_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18783,host=0.0.0.0"
+
+  ksql-server:
+    image: confluentinc/cp-ksql-server:latest
+    hostname: ksql-server
+    ports:
+      - "18088:18088"
+      - "18784:18784"
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    volumes:
+      - ../jolokia:/opt/jolokia
+    environment:
+      KSQL_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:29092,PLAINTEXT://kafka-3:39092"
+      KSQL_KSQL_SERVICE_ID: "confluent_standalone_1_"
+      KSQL_LISTENERS: "http://0.0.0.0:18088"
+      KSQL_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18784,host=0.0.0.0"
+
+  kafka-rest:
+    image: confluentinc/cp-kafka-rest:latest
+    hostname: kafka-rest
+    ports:
+      - "18089:18089"
+      - "18785:18785"
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    volumes:
+      - ../jolokia:/opt/jolokia
+    environment:
+      KAFKA_REST_ZOOKEEPER_CONNECT: "zookeeper-1:12181,zookeeper-2:22181,zookeeper-3:32181"
+      KAFKA_REST_LISTENERS: "http://localhost:18089"
+      KAFKA_REST_SCHEMA_REGISTRY_URL: "http://schema-registry-1:18083"
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18785,host=0.0.0.0"
+      KAFKA_REST_OPT: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18785,host=0.0.0.0"
+      KAFKA_REST_JMX_OPTS: "12283"
+      KAFKA_REST_HOST_NAME: "kafka-rest"
 
   telegraf-kafka-brokers:
     image: telegraf:latest
@@ -274,6 +319,72 @@ services:
       - kafka-3
     volumes:
       - ../telegraf/telegraf-kafka-monitor-dockerhost.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/rootfs/sys:ro
+      - /proc:/rootfs/proc:ro
+      - /etc:/rootfs/etc:ro
+
+  telegraf-kafka-ksql-server:
+    image: telegraf:latest
+    restart: always
+    environment:
+      HOST_PROC: /rootfs/proc
+      HOST_SYS: /rootfs/sys
+      HOST_ETC: /rootfs/etc
+    hostname: telegraf-kafka-ksql-server
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    volumes:
+      - ../telegraf/telegraf-kafka-ksql-server-dockerhost.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/rootfs/sys:ro
+      - /proc:/rootfs/proc:ro
+      - /etc:/rootfs/etc:ro
+
+  telegraf-kafka-rest:
+    image: telegraf:latest
+    restart: always
+    environment:
+      HOST_PROC: /rootfs/proc
+      HOST_SYS: /rootfs/sys
+      HOST_ETC: /rootfs/etc
+    hostname: telegraf-kafka-rest
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    volumes:
+      - ../telegraf/telegraf-kafka-rest-server-dockerhost.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/rootfs/sys:ro
+      - /proc:/rootfs/proc:ro
+      - /etc:/rootfs/etc:ro
+
+  telegraf-burrow:
+    image: telegraf:latest
+    restart: always
+    environment:
+      HOST_PROC: /rootfs/proc
+      HOST_SYS: /rootfs/sys
+      HOST_ETC: /rootfs/etc
+    hostname: telegraf-burrow
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    volumes:
+      - ../telegraf/telegraf-burrow-dockerhost.conf:/etc/telegraf/telegraf.conf:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /sys:/rootfs/sys:ro
       - /proc:/rootfs/proc:ro
