@@ -240,7 +240,7 @@ services:
       HOST_PROC: /rootfs/proc
       HOST_SYS: /rootfs/sys
       HOST_ETC: /rootfs/etc
-      SPLUNK_HEC_URL: "https://10.0.0.173:8088"
+      SPLUNK_HEC_URL: "https://dockerhost:8088"
       SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
     hostname: telegraf-kafka-brokers
     depends_on:
@@ -264,7 +264,7 @@ services:
       HOST_PROC: /rootfs/proc
       HOST_SYS: /rootfs/sys
       HOST_ETC: /rootfs/etc
-      SPLUNK_HEC_URL: "https://10.0.0.173:8088"
+      SPLUNK_HEC_URL: "https://dockerhost:8088"
       SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
     hostname: telegraf-kafka-connect
     depends_on:
@@ -289,7 +289,7 @@ services:
       HOST_PROC: /rootfs/proc
       HOST_SYS: /rootfs/sys
       HOST_ETC: /rootfs/etc
-      SPLUNK_HEC_URL: "https://10.0.0.173:8088"
+      SPLUNK_HEC_URL: "https://dockerhost:8088"
       SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
     hostname: telegraf-schema-registry
     depends_on:
@@ -314,7 +314,7 @@ services:
       HOST_PROC: /rootfs/proc
       HOST_SYS: /rootfs/sys
       HOST_ETC: /rootfs/etc
-      SPLUNK_HEC_URL: "https://10.0.0.173:8088"
+      SPLUNK_HEC_URL: "https://dockerhost:8088"
       SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
     hostname: telegraf-kafka-monitor
     depends_on:
@@ -338,7 +338,7 @@ services:
       HOST_PROC: /rootfs/proc
       HOST_SYS: /rootfs/sys
       HOST_ETC: /rootfs/etc
-      SPLUNK_HEC_URL: "https://10.0.0.173:8088"
+      SPLUNK_HEC_URL: "https://dockerhost:8088"
       SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
     hostname: telegraf-ksql-server
     depends_on:
@@ -362,7 +362,7 @@ services:
       HOST_PROC: /rootfs/proc
       HOST_SYS: /rootfs/sys
       HOST_ETC: /rootfs/etc
-      SPLUNK_HEC_URL: "https://10.0.0.173:8088"
+      SPLUNK_HEC_URL: "https://dockerhost:8088"
       SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
     hostname: telegraf-kafka-rest
     depends_on:
@@ -404,7 +404,7 @@ services:
       HOST_PROC: /rootfs/proc
       HOST_SYS: /rootfs/sys
       HOST_ETC: /rootfs/etc
-      SPLUNK_HEC_URL: "https://10.0.0.173:8088"
+      SPLUNK_HEC_URL: "https://dockerhost:8088"
       SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
     hostname: telegraf-burrow
     depends_on:

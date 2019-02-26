@@ -1,6 +1,14 @@
 version: '2'
 services:
 
+  dockerhost:
+    image: qoomon/docker-host
+    cap_add: [ 'NET_ADMIN', 'NET_RAW' ]
+    restart: on-failure
+  dummy:
+    image: bash
+    command: ["ping" , "dockerhost"]
+
   zookeeper-1:
     image: confluentinc/cp-zookeeper:latest
     hostname: zookeeper-1
@@ -61,7 +69,8 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:12181,zookeeper-2:22181,zookeeper-3:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:19092
       KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18778,host=0.0.0.0"
-
+      JMX_PORT: "9999"
+ 
   kafka-2:
     image: confluentinc/cp-kafka:latest
     hostname: kafka-2
@@ -77,7 +86,8 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:12181,zookeeper-2:22181,zookeeper-3:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:29092
       KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=28778,host=0.0.0.0"
-
+      JMX_PORT: "9999"
+ 
   kafka-3:
     image: confluentinc/cp-kafka:latest
     hostname: kafka-3
@@ -94,6 +104,7 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:12181,zookeeper-2:22181,zookeeper-3:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:39092
       KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=38778,host=0.0.0.0"
+      JMX_PORT: "9999"
 
   kafka-connect-1:
     image: confluentinc/cp-kafka-connect:latest
@@ -101,6 +112,7 @@ services:
     ports:
       - "18082:18082"
       - "18779:18779"
+      - "5514:5514"
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -112,6 +124,7 @@ services:
       - ../jolokia:/opt/jolokia
       - ../splunk-kafka-connect:/etc/kafka-connect/jars/splunk-kafka-connect
       - ../kafka-connect-datagen/confluentinc-kafka-connect-datagen-0.1.0:/etc/kafka-connect/jars/confluentinc-kafka-connect-datagen
+      - ../kafka-connect-syslog/confluentinc-kafka-connect-syslog:/etc/kafka-connect/jars/confluentinc-kafka-connect-syslog
       - ../kafka-connect:/etc/kafka-connect/config
     environment:
       KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18779,host=0.0.0.0"
@@ -123,6 +136,7 @@ services:
     ports:
       - "28082:28082"
       - "28779:28779"
+      - "5515:5515"
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -134,6 +148,7 @@ services:
       - ../jolokia:/opt/jolokia
       - ../splunk-kafka-connect:/etc/kafka-connect/jars/splunk-kafka-connect
       - ../kafka-connect-datagen/confluentinc-kafka-connect-datagen-0.1.0:/etc/kafka-connect/jars/confluentinc-kafka-connect-datagen
+      - ../kafka-connect-syslog/confluentinc-kafka-connect-syslog:/etc/kafka-connect/jars/confluentinc-kafka-connect-syslog
       - ../kafka-connect:/etc/kafka-connect/config
     environment:
       KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=28779,host=0.0.0.0"
@@ -145,6 +160,7 @@ services:
     ports:
       - "38082:38082"
       - "38779:38779"
+      - "5516:5516"
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -156,16 +172,17 @@ services:
       - ../jolokia:/opt/jolokia
       - ../splunk-kafka-connect:/etc/kafka-connect/jars/splunk-kafka-connect
       - ../kafka-connect-datagen/confluentinc-kafka-connect-datagen-0.1.0:/etc/kafka-connect/jars/confluentinc-kafka-connect-datagen
+      - ../kafka-connect-syslog/confluentinc-kafka-connect-syslog:/etc/kafka-connect/jars/confluentinc-kafka-connect-syslog
       - ../kafka-connect:/etc/kafka-connect/config
     environment:
       KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=38779,host=0.0.0.0"
     command: "/usr/bin/connect-distributed /etc/kafka-connect/config/connect-distributed.properties-kafka-connect-3"
 
-  schema-registry-1:
+  schema-registry:
     image: confluentinc/cp-schema-registry:latest
-    hostname: schema-registry-1
+    hostname: schema-registry
     ports:
-      - "18083:18083"
+      - "18081:18081"
       - "18783:18783"
     depends_on:
       - kafka-1
@@ -176,8 +193,45 @@ services:
     environment:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:29092,PLAINTEXT://kafka-3:39092"
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:18083"
+      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:18081"
       SCHEMA_REGISTRY_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18783,host=0.0.0.0"
+
+  ksql-server:
+    image: confluentinc/cp-ksql-server:latest
+    hostname: ksql-server
+    ports:
+      - "18088:18088"
+      - "18784:18784"
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    volumes:
+      - ../jolokia:/opt/jolokia
+    environment:
+      KSQL_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:29092,PLAINTEXT://kafka-3:39092"
+      KSQL_KSQL_SERVICE_ID: "confluent_standalone_1_"
+      KSQL_LISTENERS: "http://0.0.0.0:18088"
+      KSQL_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18784,host=0.0.0.0"
+
+  kafka-rest:
+    image: confluentinc/cp-kafka-rest:latest
+    hostname: kafka-rest
+    ports:
+      - "18089:18089"
+      - "18785:18785"
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    volumes:
+      - ../jolokia:/opt/jolokia
+    environment:
+      KAFKA_REST_ZOOKEEPER_CONNECT: "zookeeper-1:12181,zookeeper-2:22181,zookeeper-3:32181"
+      KAFKA_REST_LISTENERS: "http://localhost:18089"
+      KAFKA_REST_SCHEMA_REGISTRY_URL: "http://schema-registry:18083"
+      KAFKAREST_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18785,host=0.0.0.0"
+      KAFKA_REST_HOST_NAME: "kafka-rest"
 
   telegraf-kafka-brokers:
     image: telegraf:latest
@@ -186,6 +240,8 @@ services:
       HOST_PROC: /rootfs/proc
       HOST_SYS: /rootfs/sys
       HOST_ETC: /rootfs/etc
+      SPLUNK_HEC_URL: "https://splunk:8088"
+      SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
     hostname: telegraf-kafka-brokers
     depends_on:
       - zookeeper-1
@@ -208,6 +264,8 @@ services:
       HOST_PROC: /rootfs/proc
       HOST_SYS: /rootfs/sys
       HOST_ETC: /rootfs/etc
+      SPLUNK_HEC_URL: "https://splunk:8088"
+      SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
     hostname: telegraf-kafka-connect
     depends_on:
       - zookeeper-1
@@ -216,6 +274,7 @@ services:
       - kafka-1
       - kafka-2
       - kafka-3
+      - kafka-connect-1
     volumes:
       - ../telegraf/telegraf-kafka-connect.conf:/etc/telegraf/telegraf.conf:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -223,14 +282,16 @@ services:
       - /proc:/rootfs/proc:ro
       - /etc:/rootfs/etc:ro
 
-  telegraf-kafka-schema-registry:
+  telegraf-schema-registry:
     image: telegraf:latest
     restart: always
     environment:
       HOST_PROC: /rootfs/proc
       HOST_SYS: /rootfs/sys
       HOST_ETC: /rootfs/etc
-    hostname: telegraf-kafka-schema-registry
+      SPLUNK_HEC_URL: "https://splunk:8088"
+      SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
+    hostname: telegraf-schema-registry
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -238,8 +299,9 @@ services:
       - kafka-1
       - kafka-2
       - kafka-3
+      - schema-registry
     volumes:
-      - ../telegraf/telegraf-kafka-schema-registry.conf:/etc/telegraf/telegraf.conf:ro
+      - ../telegraf/telegraf-schema-registry.conf:/etc/telegraf/telegraf.conf:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /sys:/rootfs/sys:ro
       - /proc:/rootfs/proc:ro
@@ -252,6 +314,8 @@ services:
       HOST_PROC: /rootfs/proc
       HOST_SYS: /rootfs/sys
       HOST_ETC: /rootfs/etc
+      SPLUNK_HEC_URL: "https://splunk:8088"
+      SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
     hostname: telegraf-kafka-monitor
     depends_on:
       - zookeeper-1
@@ -262,6 +326,97 @@ services:
       - kafka-3
     volumes:
       - ../telegraf/telegraf-kafka-monitor.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/rootfs/sys:ro
+      - /proc:/rootfs/proc:ro
+      - /etc:/rootfs/etc:ro
+
+  telegraf-ksql-server:
+    image: telegraf:latest
+    restart: always
+    environment:
+      HOST_PROC: /rootfs/proc
+      HOST_SYS: /rootfs/sys
+      HOST_ETC: /rootfs/etc
+      SPLUNK_HEC_URL: "https://splunk:8088"
+      SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
+    hostname: telegraf-ksql-server
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    volumes:
+      - ../telegraf/telegraf-ksql-server.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/rootfs/sys:ro
+      - /proc:/rootfs/proc:ro
+      - /etc:/rootfs/etc:ro
+
+  telegraf-kafka-rest:
+    image: telegraf:latest
+    restart: always
+    environment:
+      HOST_PROC: /rootfs/proc
+      HOST_SYS: /rootfs/sys
+      HOST_ETC: /rootfs/etc
+      SPLUNK_HEC_URL: "https://splunk:8088"
+      SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
+    hostname: telegraf-kafka-rest
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+      - kafka-rest
+    volumes:
+      - ../telegraf/telegraf-kafka-rest.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/rootfs/sys:ro
+      - /proc:/rootfs/proc:ro
+      - /etc:/rootfs/etc:ro
+
+  burrow:
+    image: guilhemmarchand/burrow:latest
+    restart: always
+    hostname: burrow
+    ports:
+      - 9002:9002
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    volumes:
+      - ../burrow/config:/etc/burrow/
+      - ../burrow/tmp:/var/tmp/burrow
+
+  telegraf-burrow:
+    image: telegraf:latest
+    restart: always
+    environment:
+      HOST_PROC: /rootfs/proc
+      HOST_SYS: /rootfs/sys
+      HOST_ETC: /rootfs/etc
+      SPLUNK_HEC_URL: "https://splunk:8088"
+      SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
+    hostname: telegraf-burrow
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+      - burrow
+    volumes:
+      - ../telegraf/telegraf-burrow.conf:/etc/telegraf/telegraf.conf:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /sys:/rootfs/sys:ro
       - /proc:/rootfs/proc:ro
@@ -283,6 +438,122 @@ services:
       - ../kafka-monitor:/usr/local/share/kafka-monitor
     command: "/opt/kafka-monitor/bin/kafka-monitor-start.sh /usr/local/share/kafka-monitor/kafka-monitor.properties"
 
+  # This "container" is a workaround to pre-create topics for the Kafka Music application
+  # until we have a more elegant way to do that.
+  kafka-create-topics:
+    image: confluentinc/cp-kafka:5.1.0
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+      - schema-registry
+    hostname: kafka-create-topics
+    # We defined a dependency on "kafka", but `depends_on` will NOT wait for the
+    # dependencies to be "ready" before starting the "kafka-create-topics"
+    # container;  it waits only until the dependencies have started.  Hence we
+    # must control startup order more explicitly.
+    # See https://docs.docker.com/compose/startup-order/
+    command: "bash -c 'echo Waiting for Kafka to be ready... && \
+                       cub kafka-ready -b kafka-1:19092 1 20 && \
+                       kafka-topics --create --topic play-events --if-not-exists --zookeeper zookeeper-1:12181 --partitions 4 --replication-factor 1 && \
+                       kafka-topics --create --topic song-feed --if-not-exists --zookeeper zookeeper-1:12181 --partitions 4 --replication-factor 1 && \
+                       sleep infinity'"
+    environment:
+      # The following settings are listed here only to satisfy the image's requirements.
+      # We override the image's `command` anyways, hence this container will not start a broker.
+      KAFKA_BROKER_ID: ignored
+      KAFKA_ZOOKEEPER_CONNECT: ignored
+
+  # Continuously generates input data for the Kafka Music application.
+  kafka-music-data-generator:
+    image: confluentinc/kafka-streams-examples:5.0.0
+    hostname: kafka-music-data-generator
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+      - schema-registry
+      - kafka-create-topics
+    # Control startup order similarly to the "kafka-create-topics" container above.
+    command: "bash -c 'echo Waiting for Kafka to be ready... && \
+                       cub kafka-ready -b kafka-1:19092 1 20 && \
+                       echo Waiting for Confluent Schema Registry to be ready... && \
+                       cub sr-ready schema-registry 18081 20 && \
+                       java -cp /usr/share/java/kafka-streams-examples/kafka-streams-examples-5.0.0-standalone.jar \
+                       io.confluent.examples.streams.interactivequeries.kafkamusic.KafkaMusicExampleDriver \
+                       kafka-1:19092 http://schema-registry:18081'"
+    environment:
+      STREAMS_BOOTSTRAP_SERVERS: ignored
+      STREAMS_SCHEMA_REGISTRY_HOST: ignored
+      STREAMS_SCHEMA_REGISTRY_PORT: ignored
+      KAFKA_MUSIC_APP_REST_HOST: ignored
+      KAFKA_MUSIC_APP_REST_PORT: ignored
+
+  # Runs the Kafka Music application.
+  kafka-music-application:
+    image: confluentinc/kafka-streams-examples:5.0.0
+    hostname: kafka-music-application
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+      - schema-registry
+      - kafka-create-topics
+    volumes:
+      - ../jolokia:/opt/jolokia
+      - ../kafka-streams:/opt/kafka-streams
+    # Control startup order similarly to the "kafka-create-topics" container above.
+    # Note: The container's `run` script will perform the same readiness checks
+    # for Kafka and Confluent Schema Registry, but that's ok because they complete fast.
+    # The reason we check for readiness here is that we can insert a sleep time
+    # for topic creation before we start the application.
+    #
+    # TODO: Once https://issues.apache.org/jira/browse/KAFKA-5037 is resolved,
+    #       we can remove this `command` and use the image as-is.
+    command: "bash -c 'echo Waiting for Kafka to be ready... && \
+                       cub kafka-ready -b kafka-1:19092 1 20 && \
+                       echo Waiting for Confluent Schema Registry to be ready... && \
+                       cub sr-ready schema-registry 18081 20 && \
+                       echo Waiting a few seconds for topic creation to finish... && \
+                       sleep 2 && \
+                       /etc/confluent/docker/run'"
+    ports:
+      - '7070:7070'
+    environment:
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
+      STREAMS_BOOTSTRAP_SERVERS: kafka-1:19092
+      STREAMS_SCHEMA_REGISTRY_HOST: schema-registry
+      STREAMS_SCHEMA_REGISTRY_PORT: 18081
+      KAFKA_MUSIC_APP_REST_HOST: localhost
+      KAFKA_MUSIC_APP_REST_PORT: 7070
+
+  kafka-manager:
+    image: kafkamanager/kafka-manager:latest
+    hostname: kafka-manager
+    ports:
+      - "9000:9000"
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    environment:
+      ZK_HOSTS: "zookeeper-1:12181,zookeeper-2:22181,zookeeper-3:32181"
+      KAFKA_MANAGER_AUTH_ENABLED: "true"
+      KAFKA_MANAGER_USERNAME: "admin"
+      KAFKA_MANAGER_PASSWORD: "ch@ngeM3"
+
   splunk:
     image: splunk/splunk:latest
     hostname: splunk
@@ -297,3 +568,4 @@ services:
     volumes:
       - ../splunk/TA-telegraf-kafka:/opt/splunk/etc/apps/TA-telegraf-kafka
       - ../splunk/container_share:/opt/splunk/container_share
+
