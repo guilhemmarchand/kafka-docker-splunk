@@ -1,14 +1,6 @@
 version: '2'
 services:
 
-  dockerhost:
-    image: qoomon/docker-host
-    cap_add: [ 'NET_ADMIN', 'NET_RAW' ]
-    restart: on-failure
-  dummy:
-    image: bash
-    command: ["ping" , "dockerhost"]
-
   zookeeper-1:
     image: confluentinc/cp-zookeeper:latest
     hostname: zookeeper-1
