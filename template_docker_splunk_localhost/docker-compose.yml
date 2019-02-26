@@ -4,7 +4,6 @@ services:
   dockerhost:
     image: qoomon/docker-host
     cap_add: [ 'NET_ADMIN', 'NET_RAW' ]
-    mem_limit: 4M
     restart: on-failure
   dummy:
     image: bash
@@ -230,10 +229,8 @@ services:
     environment:
       KAFKA_REST_ZOOKEEPER_CONNECT: "zookeeper-1:12181,zookeeper-2:22181,zookeeper-3:32181"
       KAFKA_REST_LISTENERS: "http://localhost:18089"
-      KAFKA_REST_SCHEMA_REGISTRY_URL: "http://schema-registry-1:18083"
-      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18785,host=0.0.0.0"
-      KAFKA_REST_OPT: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18785,host=0.0.0.0"
-      KAFKA_REST_JMX_OPTS: "12283"
+      KAFKA_REST_SCHEMA_REGISTRY_URL: "http://schema-registry:18083"
+      KAFKAREST_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18785,host=0.0.0.0"
       KAFKA_REST_HOST_NAME: "kafka-rest"
 
   telegraf-kafka-brokers:
@@ -243,6 +240,8 @@ services:
       HOST_PROC: /rootfs/proc
       HOST_SYS: /rootfs/sys
       HOST_ETC: /rootfs/etc
+      SPLUNK_HEC_URL: "https://10.0.0.173:8088"
+      SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
     hostname: telegraf-kafka-brokers
     depends_on:
       - zookeeper-1
@@ -252,7 +251,7 @@ services:
       - kafka-2
       - kafka-3
     volumes:
-      - ../telegraf/telegraf-kafka-brokers-dockerhost.conf:/etc/telegraf/telegraf.conf:ro
+      - ../telegraf/telegraf-kafka-brokers.conf:/etc/telegraf/telegraf.conf:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /sys:/rootfs/sys:ro
       - /proc:/rootfs/proc:ro
@@ -265,6 +264,8 @@ services:
       HOST_PROC: /rootfs/proc
       HOST_SYS: /rootfs/sys
       HOST_ETC: /rootfs/etc
+      SPLUNK_HEC_URL: "https://10.0.0.173:8088"
+      SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
     hostname: telegraf-kafka-connect
     depends_on:
       - zookeeper-1
@@ -273,21 +274,24 @@ services:
       - kafka-1
       - kafka-2
       - kafka-3
+      - kafka-connect-1
     volumes:
-      - ../telegraf/telegraf-kafka-connect-dockerhost.conf:/etc/telegraf/telegraf.conf:ro
+      - ../telegraf/telegraf-kafka-connect.conf:/etc/telegraf/telegraf.conf:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /sys:/rootfs/sys:ro
       - /proc:/rootfs/proc:ro
       - /etc:/rootfs/etc:ro
 
-  telegraf-kafka-schema-registry:
+  telegraf-schema-registry:
     image: telegraf:latest
     restart: always
     environment:
       HOST_PROC: /rootfs/proc
       HOST_SYS: /rootfs/sys
       HOST_ETC: /rootfs/etc
-    hostname: telegraf-kafka-schema-registry
+      SPLUNK_HEC_URL: "https://10.0.0.173:8088"
+      SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
+    hostname: telegraf-schema-registry
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -295,8 +299,9 @@ services:
       - kafka-1
       - kafka-2
       - kafka-3
+      - schema-registry
     volumes:
-      - ../telegraf/telegraf-kafka-schema-registry-dockerhost.conf:/etc/telegraf/telegraf.conf:ro
+      - ../telegraf/telegraf-schema-registry.conf:/etc/telegraf/telegraf.conf:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /sys:/rootfs/sys:ro
       - /proc:/rootfs/proc:ro
@@ -309,6 +314,8 @@ services:
       HOST_PROC: /rootfs/proc
       HOST_SYS: /rootfs/sys
       HOST_ETC: /rootfs/etc
+      SPLUNK_HEC_URL: "https://10.0.0.173:8088"
+      SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
     hostname: telegraf-kafka-monitor
     depends_on:
       - zookeeper-1
@@ -318,20 +325,22 @@ services:
       - kafka-2
       - kafka-3
     volumes:
-      - ../telegraf/telegraf-kafka-monitor-dockerhost.conf:/etc/telegraf/telegraf.conf:ro
+      - ../telegraf/telegraf-kafka-monitor.conf:/etc/telegraf/telegraf.conf:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /sys:/rootfs/sys:ro
       - /proc:/rootfs/proc:ro
       - /etc:/rootfs/etc:ro
 
-  telegraf-kafka-ksql-server:
+  telegraf-ksql-server:
     image: telegraf:latest
     restart: always
     environment:
       HOST_PROC: /rootfs/proc
       HOST_SYS: /rootfs/sys
       HOST_ETC: /rootfs/etc
-    hostname: telegraf-kafka-ksql-server
+      SPLUNK_HEC_URL: "https://10.0.0.173:8088"
+      SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
+    hostname: telegraf-ksql-server
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -340,7 +349,7 @@ services:
       - kafka-2
       - kafka-3
     volumes:
-      - ../telegraf/telegraf-kafka-ksql-server-dockerhost.conf:/etc/telegraf/telegraf.conf:ro
+      - ../telegraf/telegraf-ksql-server.conf:/etc/telegraf/telegraf.conf:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /sys:/rootfs/sys:ro
       - /proc:/rootfs/proc:ro
@@ -353,6 +362,8 @@ services:
       HOST_PROC: /rootfs/proc
       HOST_SYS: /rootfs/sys
       HOST_ETC: /rootfs/etc
+      SPLUNK_HEC_URL: "https://10.0.0.173:8088"
+      SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
     hostname: telegraf-kafka-rest
     depends_on:
       - zookeeper-1
@@ -361,21 +372,20 @@ services:
       - kafka-1
       - kafka-2
       - kafka-3
+      - kafka-rest
     volumes:
-      - ../telegraf/telegraf-kafka-rest-server-dockerhost.conf:/etc/telegraf/telegraf.conf:ro
+      - ../telegraf/telegraf-kafka-rest.conf:/etc/telegraf/telegraf.conf:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /sys:/rootfs/sys:ro
       - /proc:/rootfs/proc:ro
       - /etc:/rootfs/etc:ro
 
-  telegraf-burrow:
-    image: telegraf:latest
+  burrow:
+    image: guilhemmarchand/burrow:latest
     restart: always
-    environment:
-      HOST_PROC: /rootfs/proc
-      HOST_SYS: /rootfs/sys
-      HOST_ETC: /rootfs/etc
-    hostname: telegraf-burrow
+    hostname: burrow
+    ports:
+      - 9002:9002
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -384,7 +394,29 @@ services:
       - kafka-2
       - kafka-3
     volumes:
-      - ../telegraf/telegraf-burrow-dockerhost.conf:/etc/telegraf/telegraf.conf:ro
+      - ../burrow/config:/etc/burrow/
+      - ../burrow/tmp:/var/tmp/burrow
+
+  telegraf-burrow:
+    image: telegraf:latest
+    restart: always
+    environment:
+      HOST_PROC: /rootfs/proc
+      HOST_SYS: /rootfs/sys
+      HOST_ETC: /rootfs/etc
+      SPLUNK_HEC_URL: "https://10.0.0.173:8088"
+      SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
+    hostname: telegraf-burrow
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+      - burrow
+    volumes:
+      - ../telegraf/telegraf-burrow.conf:/etc/telegraf/telegraf.conf:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /sys:/rootfs/sys:ro
       - /proc:/rootfs/proc:ro
@@ -411,7 +443,13 @@ services:
   kafka-create-topics:
     image: confluentinc/cp-kafka:5.1.0
     depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
       - kafka-1
+      - kafka-2
+      - kafka-3
+      - schema-registry
     hostname: kafka-create-topics
     # We defined a dependency on "kafka", but `depends_on` will NOT wait for the
     # dependencies to be "ready" before starting the "kafka-create-topics"
@@ -434,7 +472,13 @@ services:
     image: confluentinc/kafka-streams-examples:5.0.0
     hostname: kafka-music-data-generator
     depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
       - kafka-1
+      - kafka-2
+      - kafka-3
+      - schema-registry
       - kafka-create-topics
     # Control startup order similarly to the "kafka-create-topics" container above.
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
@@ -456,7 +500,12 @@ services:
     image: confluentinc/kafka-streams-examples:5.0.0
     hostname: kafka-music-application
     depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
       - kafka-1
+      - kafka-2
+      - kafka-3
       - schema-registry
       - kafka-create-topics
     volumes:
@@ -496,6 +545,9 @@ services:
       - zookeeper-1
       - zookeeper-2
       - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
     environment:
       ZK_HOSTS: "zookeeper-1:12181,zookeeper-2:22181,zookeeper-3:32181"
       KAFKA_MANAGER_AUTH_ENABLED: "true"
