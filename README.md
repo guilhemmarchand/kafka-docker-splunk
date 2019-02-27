@@ -1,6 +1,6 @@
 # kafka-docker-splunk
 
-Copyright 2018 Guilhem Marchand
+Copyright 2018-2019 Guilhem Marchand
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,44 +16,43 @@ limitations under the License.
 
 ## purpose:
 
-This repository contains simple configuration templates that will run a full Kafka environment in Docker.
+This repository contains docker-compose templates that will create ouf of the box a full Kafka Confluent OSS environment in Docker.
+
+Its purpose is first of all to qualify, test and demonstrate the monitoring of a full Kafka/Confluent environment with Splunk.
 
 ![screen1](./img/docker_template.png)
 
-Two templates are provided:
+Two docker-compose.yml templates are provided in the following directories:
 
-### template_docker_splunk_ondocker
+[./template_docker_splunk_ondocker](./template_docker_splunk_ondocker/)
 
-This template will run:
+[./template_docker_splunk_localhost](./template_docker_splunk_localhost/)
+
+The first template suffixed by "_ondocker" will run a Splunk standalone instance in Docker, while the second will attempt to send metrics to your local Splunk instance. (using the dockerhost container to communicate with your local guest machine)
+
+In the case of the template running Splunk on Docker, the setup of Splunk (index definition, HEC token creation...) is entirely automatic.
+
+In both cases, the target for HEC (your Splunk server running the HTTP Event Collector) and the token are variables loaded as environment variables in the Telegraf containers:
+
+```
+      SPLUNK_HEC_URL: "https://dockerhost:8088"
+      SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
+```
+
+Shall you want to send the metrics to a third party destination and/or using a different token value, modify these values in the docker-compose.yml file.
+
+## Included containers
 
 - Zookeeper cluster (3 nodes)
 - Kafka broker cluster (3 nodes)
 - Kafka connect cluster (3 nodes)
-- Confluent schema-registry (1 node)
-- Splunk standalone instance pre-configured (login: admin / password: ch@ngeM3) with port redirected to your localhost
-- Kafka LinkedIn monitor container
-- A Telegraf container collecting metrics from Zookeeper and Kafka brokers
-- A Telegraf container collecting metrics from Kafka Connect
-- A Telegraf container collecting metrics from schema-registry
-- A Telegraf container collecting metrics from LinkedIn Kafka monitor
-
-### template_docker_splunk_localhost
-
-This template will the same infrastructure in docker except the Splunk instance, Telegraf containers will forwarder data to your Splunk localhost:
-
-- Zookeeper cluster (3 nodes)
-- Kafka broker cluster (3 nodes)
-- Kafka connect cluster (3 nodes)
-- Confluent schema-registry (1 node)
-- Kafka LinkedIn monitor container
-- A Telegraf container collecting metrics from Zookeeper and Kafka brokers
-- A Telegraf container collecting metrics from Kafka Connect
-- A Telegraf container collecting metrics from schema-registry
-- A Telegraf container collecting metrics from LinkedIn Kafka monitor
-
-Notes:
-
-Telegraf will attempt to forward metrics to your localhost on port 8088, a HEC token and index shall be created, configuration are available in splunk/TA-telegraf-kafka directory.
+- Confluent schema-registry
+- Confluent kafka-rest
+- Confluent ksql-server
+- Kafka LinkedIn SLA monitor container
+- Different Telegraf containers polling and sending to your Splunk metric store
+- Yahoo Kafka Manager (port exposed to localhost:9000)
+- Kafka Burrow Consumer lag Monitoring (port exposed to localhost:9001, login: admin, password: ch@ngeM3)
 
 ### Requirements
 
@@ -98,19 +97,46 @@ Verify metrics ingestion in Splunk:
 | mcatalog values(metric_name) as metric_name, values(_dims) where index=telegraf_kafka
 ```
 
-Recommendation: Install the Metrics Workspace application in Splunk:
+#### Metrics Workspace application
+
+Install the Metrics Workspace application in Splunk:
 
 https://splunkbase.splunk.com/app/4192/
 
 ![screen1](./img/screen001.png)
 
-Transfer files between host and container:
+The Metrics Workspace application is not mandatory at all, but it very useful and convenient to explore and visualize available metrics in a friendly and efficient UI.
+
+#### Kafka Smart Monitoring application
+
+Once your environment is up, download the Kafka Monitoring Application, install from Splunk Web UI, ideally restart Splunk via the UI and appreciate a fully ready, up and running monitoring solution.
+
+https://splunkbase.splunk.com/app/4268/
+
+![telegraf-kafka.png](./img/telegraf-kafka.png)
+
+#### Transfer files between host and the Splunk container
+
+If you are using the _ondocker template, you can easily make files available to the container:
 
 You can use the splunk/container_share directory to share files with the splunk docker container (in /opt/splunk/container_share) for ease.
 
-To destroy the environment:
+This is specially useful if you want to run ITSI.
+
+#### ITSI module for Kafka Smart Monitoring
+
+If you deployed ITSI, or if you are running ITSI on the Splunk target instance, download and install the Kafka module:
+
+https://splunkbase.splunk.com/app/4261/
+
+Restart Splunk after the installation, you can start creating the entities using the builtin entities discovery, and create services with the builtin service templaces.
+
+![service_analyser.png](./img/service_analyser.png)
+
+#### To destroy the environment:
+
+Finally, you can totally destroy the environment:
 
 ```
 ./destroy.sh
 ```
-
