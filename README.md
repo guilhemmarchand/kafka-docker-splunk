@@ -143,6 +143,16 @@ Finally, you can totally destroy the environment:
 ./destroy.sh
 ```
 
+#### What about event logging?
+
+This repository does not manage the indexing of event logs from the different components, the aspects are entirely taken in charge by the Kafka Smart Monitoring application, and the ITSI Module for Kafka Smart Monitoring.
+
+See for more information:
+
+https://splunk-guide-for-kafka-monitoring.readthedocs.io
+
+https://github.com/guilhemmarchand/splunk-guide-for-kafka-monitoring/
+
 #### Traditional dedicated, Kubernetes, real-world configuration and Production ready
 
 The purpose of these templates is to demonstrate and/or build a easy quick lab in a minute.
