@@ -20,7 +20,9 @@ This repository contains docker-compose templates that will create ouf of the bo
 
 Its purpose is first of all to qualify, test and demonstrate the monitoring of a full Kafka/Confluent environment with Splunk.
 
-![screen1](./img/docker_template.png)
+The following diagram represents the metrics data collection:
+
+![screen1](./img/overview_diagram.png)
 
 Two docker-compose.yml templates are provided in the following directories:
 
