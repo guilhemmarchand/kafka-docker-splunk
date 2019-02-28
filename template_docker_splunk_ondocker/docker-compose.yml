@@ -49,7 +49,6 @@ services:
     hostname: kafka-1
     ports:
       - "19092:19092"
-      - "18778:18778"
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -60,7 +59,7 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:12181,zookeeper-2:22181,zookeeper-3:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:19092
-      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18778,host=0.0.0.0"
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
       JMX_PORT: "9999"
  
   kafka-2:
@@ -68,7 +67,6 @@ services:
     hostname: kafka-2
     ports:
       - "29092:29092"
-      - "28778:28778"
     depends_on:
       - kafka-1
     volumes:
@@ -77,7 +75,7 @@ services:
       KAFKA_BROKER_ID: 2
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:12181,zookeeper-2:22181,zookeeper-3:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:29092
-      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=28778,host=0.0.0.0"
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
       JMX_PORT: "9999"
  
   kafka-3:
@@ -85,7 +83,6 @@ services:
     hostname: kafka-3
     ports:
       - "39092:39092"
-      - "38778:38778"
     depends_on:
       - kafka-1
       - kafka-2
@@ -95,7 +92,7 @@ services:
       KAFKA_BROKER_ID: 3
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:12181,zookeeper-2:22181,zookeeper-3:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:39092
-      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=38778,host=0.0.0.0"
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
       JMX_PORT: "9999"
 
   kafka-connect-1:
@@ -103,8 +100,6 @@ services:
     hostname: kafka-connect-1
     ports:
       - "18082:18082"
-      - "18779:18779"
-      - "5514:5514"
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -119,7 +114,7 @@ services:
       - ../kafka-connect-syslog/confluentinc-kafka-connect-syslog:/etc/kafka-connect/jars/confluentinc-kafka-connect-syslog
       - ../kafka-connect:/etc/kafka-connect/config
     environment:
-      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18779,host=0.0.0.0"
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
     command: "/usr/bin/connect-distributed /etc/kafka-connect/config/connect-distributed.properties-kafka-connect-1"
 
   kafka-connect-2:
@@ -127,8 +122,6 @@ services:
     hostname: kafka-connect-2
     ports:
       - "28082:28082"
-      - "28779:28779"
-      - "5515:5515"
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -143,7 +136,7 @@ services:
       - ../kafka-connect-syslog/confluentinc-kafka-connect-syslog:/etc/kafka-connect/jars/confluentinc-kafka-connect-syslog
       - ../kafka-connect:/etc/kafka-connect/config
     environment:
-      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=28779,host=0.0.0.0"
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
     command: "/usr/bin/connect-distributed /etc/kafka-connect/config/connect-distributed.properties-kafka-connect-2"
 
   kafka-connect-3:
@@ -151,8 +144,6 @@ services:
     hostname: kafka-connect-3
     ports:
       - "38082:38082"
-      - "38779:38779"
-      - "5516:5516"
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -167,7 +158,7 @@ services:
       - ../kafka-connect-syslog/confluentinc-kafka-connect-syslog:/etc/kafka-connect/jars/confluentinc-kafka-connect-syslog
       - ../kafka-connect:/etc/kafka-connect/config
     environment:
-      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=38779,host=0.0.0.0"
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
     command: "/usr/bin/connect-distributed /etc/kafka-connect/config/connect-distributed.properties-kafka-connect-3"
 
   schema-registry:
@@ -175,7 +166,6 @@ services:
     hostname: schema-registry
     ports:
       - "18081:18081"
-      - "18783:18783"
     depends_on:
       - kafka-1
       - kafka-2
@@ -186,14 +176,13 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:29092,PLAINTEXT://kafka-3:39092"
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:18081"
-      SCHEMA_REGISTRY_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18783,host=0.0.0.0"
+      SCHEMA_REGISTRY_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
 
   ksql-server:
     image: confluentinc/cp-ksql-server:latest
     hostname: ksql-server
     ports:
       - "18088:18088"
-      - "18784:18784"
     depends_on:
       - kafka-1
       - kafka-2
@@ -204,14 +193,13 @@ services:
       KSQL_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:29092,PLAINTEXT://kafka-3:39092"
       KSQL_KSQL_SERVICE_ID: "confluent_standalone_1_"
       KSQL_LISTENERS: "http://0.0.0.0:18088"
-      KSQL_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18784,host=0.0.0.0"
+      KSQL_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
 
   kafka-rest:
     image: confluentinc/cp-kafka-rest:latest
     hostname: kafka-rest
     ports:
       - "18089:18089"
-      - "18785:18785"
     depends_on:
       - kafka-1
       - kafka-2
@@ -222,7 +210,7 @@ services:
       KAFKA_REST_ZOOKEEPER_CONNECT: "zookeeper-1:12181,zookeeper-2:22181,zookeeper-3:32181"
       KAFKA_REST_LISTENERS: "http://localhost:18089"
       KAFKA_REST_SCHEMA_REGISTRY_URL: "http://schema-registry:18083"
-      KAFKAREST_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=18785,host=0.0.0.0"
+      KAFKAREST_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
       KAFKA_REST_HOST_NAME: "kafka-rest"
 
   telegraf-kafka-brokers:
@@ -417,8 +405,6 @@ services:
   kafka-monitor:
     image: guilhemmarchand/kafka-monitor:latest
     hostname: kafka-monitor
-    ports:
-      - "18884:8778"
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -521,7 +507,6 @@ services:
     ports:
       - '7070:7070'
     environment:
-      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
       STREAMS_BOOTSTRAP_SERVERS: kafka-1:19092
       STREAMS_SCHEMA_REGISTRY_HOST: schema-registry
       STREAMS_SCHEMA_REGISTRY_PORT: 18081
@@ -560,4 +545,3 @@ services:
     volumes:
       - ../splunk/TA-telegraf-kafka:/opt/splunk/etc/apps/TA-telegraf-kafka
       - ../splunk/container_share:/opt/splunk/container_share
-

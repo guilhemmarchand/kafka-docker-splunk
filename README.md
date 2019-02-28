@@ -56,12 +56,29 @@ Shall you want to send the metrics to a third party destination and/or using a d
 - Yahoo Kafka Manager (port exposed to localhost:9000)
 - Kafka Burrow Consumer lag Monitoring (port exposed to localhost:9001, login: admin, password: ch@ngeM3)
 
+In addition, these templates will run a few containers that will create a Kafka stream from Confluent example repositories, to create a consumer we can monitor and generate some activities in Kafka.
+
 ### Requirements
 
 To be able to use these templates, you need:
 
 - docker
 - docker-compose
+
+Several ports are exposed to the localhost, and need to be available on the machine:
+
+12181 / 22181 / 32181 (Zookeeper)
+19092 / 29092 / 39092 (Kafka Brokers)
+18082 / 28082 / 38082 (Kafka Connect)
+18081 (schema-registry)
+18088 (ksql-server)
+18089 (kafka-rest)
+9000 (kafka-manager)
+9002 (Burrow)
+7070 (kafka stream sample app)
+8000 / 8089 / 8088 / 9997 (Splunk, only if using _ondocker template)
+
+Some resources (CPU/Memory)... this runs perfectly fine on my laptop... (but consumes lots of battery yes...)
 
 ### Using the templates
 
