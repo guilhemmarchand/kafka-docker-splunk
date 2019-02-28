@@ -140,3 +140,11 @@ Finally, you can totally destroy the environment:
 ```
 ./destroy.sh
 ```
+
+#### Traditional dedicated, Kubernetes, real-world configuration and Production ready
+
+The purpose of these templates is to demonstrate and/or build a easy quick lab in a minute.
+
+Real World instructions and templates for a Production ready deployment, be in Kubernetes or traditional dedicated servers, are covered in the following repository:
+
+https://github.com/guilhemmarchand/splunk-guide-for-kafka-monitoring/
