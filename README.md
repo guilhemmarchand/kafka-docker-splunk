@@ -52,7 +52,7 @@ Shall you want to send the metrics to a third party destination and/or using a d
 - Confluent kafka-rest
 - Confluent ksql-server
 - Kafka LinkedIn SLA monitor container
-- Different Telegraf containers polling and sending to your Splunk metric store
+- Telegraf container polling and sending to your Splunk metric store
 - Yahoo Kafka Manager (port exposed to localhost:9000)
 - Kafka Burrow Consumer lag Monitoring (port exposed to localhost:9001, login: admin, password: ch@ngeM3)
 
