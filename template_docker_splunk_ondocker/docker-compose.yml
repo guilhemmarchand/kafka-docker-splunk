@@ -6,6 +6,8 @@ services:
     hostname: zookeeper-1
     ports:
       - "12181:12181"
+    volumes:
+      - ../jolokia:/opt/jolokia
     environment:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: 12181
@@ -13,12 +15,15 @@ services:
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
       ZOOKEEPER_SERVERS: zookeeper-1:22888:23888;zookeeper-2:32888:33888;zookeeper-3:42888:43888
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
 
   zookeeper-2:
     image: confluentinc/cp-zookeeper:latest
     hostname: zookeeper-2
     ports:
       - "22181:22181"
+    volumes:
+      - ../jolokia:/opt/jolokia
     depends_on:
       - zookeeper-1
     environment:
@@ -28,6 +33,7 @@ services:
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
       ZOOKEEPER_SERVERS: zookeeper-1:22888:23888;zookeeper-2:32888:33888;zookeeper-3:42888:43888
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
 
   zookeeper-3:
     image: confluentinc/cp-zookeeper:latest
@@ -36,6 +42,8 @@ services:
       - "32181:32181"
     depends_on:
       - zookeeper-2
+    volumes:
+      - ../jolokia:/opt/jolokia
     environment:
       ZOOKEEPER_SERVER_ID: 3
       ZOOKEEPER_CLIENT_PORT: 32181
@@ -43,6 +51,7 @@ services:
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
       ZOOKEEPER_SERVERS: zookeeper-1:22888:23888;zookeeper-2:32888:33888;zookeeper-3:42888:43888
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
 
   kafka-1:
     image: confluentinc/cp-kafka:latest
