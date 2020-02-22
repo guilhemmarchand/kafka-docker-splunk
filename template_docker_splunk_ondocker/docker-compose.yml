@@ -255,7 +255,7 @@ services:
       - ../burrow/tmp:/var/tmp/burrow
 
   kafka-monitor:
-    image: guilhemmarchand/kafka-monitor:2.0.3
+    image: guilhemmarchand/kafka-monitor:latest
     hostname: kafka-monitor
     depends_on:
       - zookeeper-1
