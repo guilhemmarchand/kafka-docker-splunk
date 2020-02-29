@@ -32,3 +32,8 @@ backups
 
 # container_share
 splunk/container_share/*.tgz
+
+# Mac OS X
+.DS_Store
+*/.DS_Store
+
