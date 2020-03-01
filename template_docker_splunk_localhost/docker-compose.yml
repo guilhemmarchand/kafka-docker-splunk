@@ -12,49 +12,107 @@ services:
   zookeeper-1:
     image: confluentinc/cp-zookeeper:latest
     hostname: zookeeper-1
+    logging:
+      driver: splunk
+      options:
+        splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
+        splunk-url: "https://dockerhost:8088"
+        splunk-insecureskipverify: "true"
+        splunk-verify-connection: "false"
+        splunk-sourcetype: "docker:kafka:zookeeper"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+        env: "env,label,host"
     ports:
       - "12181:12181"
+    volumes:
+      - ../jolokia:/opt/jolokia
     environment:
+      env: "docker_env"
+      label: "testing"
+      host: "zookeeper-1"
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: 12181
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
       ZOOKEEPER_SERVERS: zookeeper-1:22888:23888;zookeeper-2:32888:33888;zookeeper-3:42888:43888
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
 
   zookeeper-2:
     image: confluentinc/cp-zookeeper:latest
     hostname: zookeeper-2
+    logging:
+      driver: splunk
+      options:
+        splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
+        splunk-url: "https://dockerhost:8088"
+        splunk-insecureskipverify: "true"
+        splunk-verify-connection: "false"
+        splunk-sourcetype: "docker:kafka:zookeeper"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+        env: "env,label,host"
     ports:
       - "22181:22181"
+    volumes:
+      - ../jolokia:/opt/jolokia
     depends_on:
       - zookeeper-1
     environment:
+      env: "docker_env"
+      label: "testing"
+      host: "zookeeper-2"
       ZOOKEEPER_SERVER_ID: 2
       ZOOKEEPER_CLIENT_PORT: 22181
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
       ZOOKEEPER_SERVERS: zookeeper-1:22888:23888;zookeeper-2:32888:33888;zookeeper-3:42888:43888
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
 
   zookeeper-3:
     image: confluentinc/cp-zookeeper:latest
     hostname: zookeeper-3
+    logging:
+      driver: splunk
+      options:
+        splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
+        splunk-url: "https://dockerhost:8088"
+        splunk-insecureskipverify: "true"
+        splunk-verify-connection: "false"
+        splunk-sourcetype: "docker:kafka:zookeeper"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+        env: "env,label,host"
     ports:
       - "32181:32181"
     depends_on:
       - zookeeper-2
+    volumes:
+      - ../jolokia:/opt/jolokia
     environment:
+      env: "docker_env"
+      label: "testing"
+      host: "zookeeper-3"
       ZOOKEEPER_SERVER_ID: 3
       ZOOKEEPER_CLIENT_PORT: 32181
       ZOOKEEPER_TICK_TIME: 2000
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
       ZOOKEEPER_SERVERS: zookeeper-1:22888:23888;zookeeper-2:32888:33888;zookeeper-3:42888:43888
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
 
   kafka-1:
     image: confluentinc/cp-kafka:latest
     hostname: kafka-1
+    logging:
+      driver: splunk
+      options:
+        splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
+        splunk-url: "https://dockerhost:8088"
+        splunk-insecureskipverify: "true"
+        splunk-verify-connection: "false"
+        splunk-sourcetype: "docker:kafka:broker"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+        env: "env,label,host"
     ports:
       - "19092:19092"
     depends_on:
@@ -64,6 +122,9 @@ services:
     volumes:
       - ../jolokia:/opt/jolokia
     environment:
+      env: "docker_env"
+      label: "testing"
+      host: "kafka-1"
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:12181,zookeeper-2:22181,zookeeper-3:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:19092
@@ -73,6 +134,16 @@ services:
   kafka-2:
     image: confluentinc/cp-kafka:latest
     hostname: kafka-2
+    logging:
+      driver: splunk
+      options:
+        splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
+        splunk-url: "https://dockerhost:8088"
+        splunk-insecureskipverify: "true"
+        splunk-verify-connection: "false"
+        splunk-sourcetype: "docker:kafka:broker"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+        env: "env,label,host"
     ports:
       - "29092:29092"
     depends_on:
@@ -80,6 +151,9 @@ services:
     volumes:
       - ../jolokia:/opt/jolokia
     environment:
+      env: "docker_env"
+      label: "testing"
+      host: "kafka-2"
       KAFKA_BROKER_ID: 2
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:12181,zookeeper-2:22181,zookeeper-3:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:29092
@@ -89,6 +163,16 @@ services:
   kafka-3:
     image: confluentinc/cp-kafka:latest
     hostname: kafka-3
+    logging:
+      driver: splunk
+      options:
+        splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
+        splunk-url: "https://dockerhost:8088"
+        splunk-insecureskipverify: "true"
+        splunk-verify-connection: "false"
+        splunk-sourcetype: "docker:kafka:broker"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+        env: "env,label,host"
     ports:
       - "39092:39092"
     depends_on:
@@ -97,6 +181,9 @@ services:
     volumes:
       - ../jolokia:/opt/jolokia
     environment:
+      env: "docker_env"
+      label: "testing"
+      host: "kafka-3"
       KAFKA_BROKER_ID: 3
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:12181,zookeeper-2:22181,zookeeper-3:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:39092
@@ -106,6 +193,16 @@ services:
   kafka-connect-1:
     image: confluentinc/cp-kafka-connect:latest
     hostname: kafka-connect-1
+    logging:
+      driver: splunk
+      options:
+        splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
+        splunk-url: "https://dockerhost:8088"
+        splunk-insecureskipverify: "true"
+        splunk-verify-connection: "false"
+        splunk-sourcetype: "docker:kafka:connect"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+        env: "env,label,host"
     ports:
       - "18082:18082"
     depends_on:
@@ -118,16 +215,29 @@ services:
     volumes:
       - ../jolokia:/opt/jolokia
       - ../splunk-kafka-connect:/etc/kafka-connect/jars/splunk-kafka-connect
-      - ../kafka-connect-datagen/confluentinc-kafka-connect-datagen-0.1.0:/etc/kafka-connect/jars/confluentinc-kafka-connect-datagen
+      - ../kafka-connect-datagen/confluentinc-kafka-connect-datagen:/etc/kafka-connect/jars/confluentinc-kafka-connect-datagen
       - ../kafka-connect-syslog/confluentinc-kafka-connect-syslog:/etc/kafka-connect/jars/confluentinc-kafka-connect-syslog
       - ../kafka-connect:/etc/kafka-connect/config
     environment:
+      env: "docker_env"
+      label: "testing"
+      host: "kafka-connect-1"
       KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
     command: "/usr/bin/connect-distributed /etc/kafka-connect/config/connect-distributed.properties-kafka-connect-1"
 
   kafka-connect-2:
     image: confluentinc/cp-kafka-connect:latest
     hostname: kafka-connect-2
+    logging:
+      driver: splunk
+      options:
+        splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
+        splunk-url: "https://dockerhost:8088"
+        splunk-insecureskipverify: "true"
+        splunk-verify-connection: "false"
+        splunk-sourcetype: "docker:kafka:connect"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+        env: "env,label,host"
     ports:
       - "28082:28082"
     depends_on:
@@ -140,16 +250,29 @@ services:
     volumes:
       - ../jolokia:/opt/jolokia
       - ../splunk-kafka-connect:/etc/kafka-connect/jars/splunk-kafka-connect
-      - ../kafka-connect-datagen/confluentinc-kafka-connect-datagen-0.1.0:/etc/kafka-connect/jars/confluentinc-kafka-connect-datagen
+      - ../kafka-connect-datagen/confluentinc-kafka-connect-datagen:/etc/kafka-connect/jars/confluentinc-kafka-connect-datagen
       - ../kafka-connect-syslog/confluentinc-kafka-connect-syslog:/etc/kafka-connect/jars/confluentinc-kafka-connect-syslog
       - ../kafka-connect:/etc/kafka-connect/config
     environment:
+      env: "docker_env"
+      label: "testing"
+      host: "kafka-connect-2"
       KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
     command: "/usr/bin/connect-distributed /etc/kafka-connect/config/connect-distributed.properties-kafka-connect-2"
 
   kafka-connect-3:
     image: confluentinc/cp-kafka-connect:latest
     hostname: kafka-connect-3
+    logging:
+      driver: splunk
+      options:
+        splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
+        splunk-url: "https://dockerhost:8088"
+        splunk-insecureskipverify: "true"
+        splunk-verify-connection: "false"
+        splunk-sourcetype: "docker:kafka:connect"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+        env: "env,label,host"
     ports:
       - "38082:38082"
     depends_on:
@@ -162,16 +285,29 @@ services:
     volumes:
       - ../jolokia:/opt/jolokia
       - ../splunk-kafka-connect:/etc/kafka-connect/jars/splunk-kafka-connect
-      - ../kafka-connect-datagen/confluentinc-kafka-connect-datagen-0.1.0:/etc/kafka-connect/jars/confluentinc-kafka-connect-datagen
+      - ../kafka-connect-datagen/confluentinc-kafka-connect-datagen:/etc/kafka-connect/jars/confluentinc-kafka-connect-datagen
       - ../kafka-connect-syslog/confluentinc-kafka-connect-syslog:/etc/kafka-connect/jars/confluentinc-kafka-connect-syslog
       - ../kafka-connect:/etc/kafka-connect/config
     environment:
+      env: "docker_env"
+      label: "testing"
+      host: "kafka-connect-3"
       KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
     command: "/usr/bin/connect-distributed /etc/kafka-connect/config/connect-distributed.properties-kafka-connect-3"
 
   schema-registry:
     image: confluentinc/cp-schema-registry:latest
     hostname: schema-registry
+    logging:
+      driver: splunk
+      options:
+        splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
+        splunk-url: "https://dockerhost:8088"
+        splunk-insecureskipverify: "true"
+        splunk-verify-connection: "false"
+        splunk-sourcetype: "docker:confluent:schema-registry"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+        env: "env,label,host"
     ports:
       - "18081:18081"
     depends_on:
@@ -181,6 +317,9 @@ services:
     volumes:
       - ../jolokia:/opt/jolokia
     environment:
+      env: "docker_env"
+      label: "testing"
+      host: "schema-registry"
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:29092,PLAINTEXT://kafka-3:39092"
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:18081"
@@ -189,6 +328,16 @@ services:
   ksql-server:
     image: confluentinc/cp-ksql-server:latest
     hostname: ksql-server
+    logging:
+      driver: splunk
+      options:
+        splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
+        splunk-url: "https://dockerhost:8088"
+        splunk-insecureskipverify: "true"
+        splunk-verify-connection: "false"
+        splunk-sourcetype: "docker:confluent:ksql-server"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+        env: "env,label,host"
     ports:
       - "18088:18088"
     depends_on:
@@ -198,6 +347,9 @@ services:
     volumes:
       - ../jolokia:/opt/jolokia
     environment:
+      env: "docker_env"
+      label: "testing"
+      host: "ksql-server"
       KSQL_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:29092,PLAINTEXT://kafka-3:39092"
       KSQL_KSQL_SERVICE_ID: "confluent_standalone_1_"
       KSQL_LISTENERS: "http://0.0.0.0:18088"
@@ -206,6 +358,16 @@ services:
   kafka-rest:
     image: confluentinc/cp-kafka-rest:latest
     hostname: kafka-rest
+    logging:
+      driver: splunk
+      options:
+        splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
+        splunk-url: "https://dockerhost:8088"
+        splunk-insecureskipverify: "true"
+        splunk-verify-connection: "false"
+        splunk-sourcetype: "docker:confluent:kafka-rest"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+        env: "env,label,host"
     ports:
       - "18089:18089"
     depends_on:
@@ -215,6 +377,9 @@ services:
     volumes:
       - ../jolokia:/opt/jolokia
     environment:
+      env: "docker_env"
+      label: "testing"
+      host: "kafka-rest"
       KAFKA_REST_ZOOKEEPER_CONNECT: "zookeeper-1:12181,zookeeper-2:22181,zookeeper-3:32181"
       KAFKA_REST_LISTENERS: "http://localhost:18089"
       KAFKA_REST_SCHEMA_REGISTRY_URL: "http://schema-registry:18083"
@@ -225,12 +390,25 @@ services:
     image: telegraf:latest
     restart: always
     environment:
+      env: "docker_env"
+      label: "testing"
+      host: "telegraf"
       HOST_PROC: /rootfs/proc
       HOST_SYS: /rootfs/sys
       HOST_ETC: /rootfs/etc
       SPLUNK_HEC_URL: "https://dockerhost:8088"
       SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
     hostname: telegraf
+    logging:
+      driver: splunk
+      options:
+        splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
+        splunk-url: "https://dockerhost:8088"
+        splunk-insecureskipverify: "true"
+        splunk-verify-connection: "false"
+        splunk-sourcetype: "docker:telegraf"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+        env: "env,label,host"
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -246,9 +424,19 @@ services:
       - /etc:/rootfs/etc:ro
 
   burrow:
-    image: guilhemmarchand/burrow:1.2.2
+    image: guilhemmarchand/burrow:latest
     restart: always
     hostname: burrow
+    logging:
+      driver: splunk
+      options:
+        splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
+        splunk-url: "https://dockerhost:8088"
+        splunk-insecureskipverify: "true"
+        splunk-verify-connection: "false"
+        splunk-sourcetype: "docker:burrow"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+        env: "env,label,host"
     ports:
       - 9002:9002
     depends_on:
@@ -261,10 +449,24 @@ services:
     volumes:
       - ../burrow/config:/etc/burrow/
       - ../burrow/tmp:/var/tmp/burrow
+    environment:
+      env: "docker_env"
+      label: "testing"
+      host: "burrow"
 
   kafka-monitor:
-    image: guilhemmarchand/kafka-monitor:2.0.3
+    image: guilhemmarchand/kafka-monitor:latest
     hostname: kafka-monitor
+    logging:
+      driver: splunk
+      options:
+        splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
+        splunk-url: "https://dockerhost:8088"
+        splunk-insecureskipverify: "true"
+        splunk-verify-connection: "false"
+        splunk-sourcetype: "docker:kafka-monitor"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+        env: "env,label,host"
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -275,6 +477,10 @@ services:
     volumes:
       - ../kafka-monitor:/usr/local/share/kafka-monitor
     command: "/opt/kafka-monitor/bin/kafka-monitor-start.sh /usr/local/share/kafka-monitor/kafka-monitor.properties"
+    environment:
+      env: "docker_env"
+      label: "testing"
+      host: "kafka-monitor"
 
   # This "container" is a workaround to pre-create topics for the Kafka Music application
   # until we have a more elegant way to do that.
