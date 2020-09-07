@@ -1,4 +1,4 @@
-version: '2'
+version: '2.4'
 services:
 
   zookeeper-1:
@@ -16,6 +16,7 @@ services:
         env: "env,label,host"
     ports:
       - "12181:12181"
+    mem_limit: 300m
     volumes:
       - ../jolokia:/opt/jolokia
     environment:
@@ -45,6 +46,7 @@ services:
         env: "env,label,host"
     ports:
       - "22181:22181"
+    mem_limit: 300m
     volumes:
       - ../jolokia:/opt/jolokia
     depends_on:
@@ -76,6 +78,7 @@ services:
         env: "env,label,host"
     ports:
       - "32181:32181"
+    mem_limit: 300m
     depends_on:
       - zookeeper-2
     volumes:
@@ -107,6 +110,7 @@ services:
         env: "env,label,host"
     ports:
       - "19092:19092"
+    mem_limit: 300m
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -138,6 +142,7 @@ services:
         env: "env,label,host"
     ports:
       - "29092:29092"
+    mem_limit: 300m
     depends_on:
       - kafka-1
     volumes:
@@ -167,6 +172,7 @@ services:
         env: "env,label,host"
     ports:
       - "39092:39092"
+    mem_limit: 300m
     depends_on:
       - kafka-1
       - kafka-2
@@ -197,6 +203,7 @@ services:
         env: "env,label,host"
     ports:
       - "18082:18082"
+    mem_limit: 300m
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -230,6 +237,7 @@ services:
         splunk-sourcetype: "docker:kafka:connect"
         tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
         env: "env,label,host"
+    mem_limit: 300m
     ports:
       - "28082:28082"
     depends_on:
@@ -265,6 +273,7 @@ services:
         splunk-sourcetype: "docker:kafka:connect"
         tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
         env: "env,label,host"
+    mem_limit: 300m
     ports:
       - "38082:38082"
     depends_on:
@@ -300,6 +309,7 @@ services:
         splunk-sourcetype: "docker:confluent:schema-registry"
         tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
         env: "env,label,host"
+    mem_limit: 300m
     ports:
       - "18081:18081"
     depends_on:
@@ -330,6 +340,7 @@ services:
         splunk-sourcetype: "docker:confluent:ksql-server"
         tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
         env: "env,label,host"
+    mem_limit: 300m
     ports:
       - "18088:18088"
     depends_on:
@@ -360,6 +371,7 @@ services:
         splunk-sourcetype: "docker:confluent:kafka-rest"
         tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
         env: "env,label,host"
+    mem_limit: 300m
     ports:
       - "18089:18089"
     depends_on:
@@ -401,6 +413,7 @@ services:
         splunk-sourcetype: "docker:telegraf"
         tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
         env: "env,label,host"
+    mem_limit: 300m
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -429,6 +442,7 @@ services:
         splunk-sourcetype: "docker:burrow"
         tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
         env: "env,label,host"
+    mem_limit: 300m
     ports:
       - 9002:9002
     depends_on:
@@ -459,6 +473,7 @@ services:
         splunk-sourcetype: "docker:kafka-monitor"
         tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
         env: "env,label,host"
+    mem_limit: 300m
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -502,6 +517,7 @@ services:
       # We override the image's `command` anyways, hence this container will not start a broker.
       KAFKA_BROKER_ID: ignored
       KAFKA_ZOOKEEPER_CONNECT: ignored
+    mem_limit: 300m
 
   # Continuously generates input data for the Kafka Music application.
   kafka-music-data-generator:
@@ -530,6 +546,7 @@ services:
       STREAMS_SCHEMA_REGISTRY_PORT: ignored
       KAFKA_MUSIC_APP_REST_HOST: ignored
       KAFKA_MUSIC_APP_REST_PORT: ignored
+    mem_limit: 300m
 
   # Runs the Kafka Music application.
   kafka-music-application:
@@ -564,6 +581,7 @@ services:
                        /etc/confluent/docker/run'"
     ports:
       - '7070:7070'
+    mem_limit: 300m
     environment:
       STREAMS_BOOTSTRAP_SERVERS: kafka-1:19092
       STREAMS_SCHEMA_REGISTRY_HOST: schema-registry
@@ -576,6 +594,7 @@ services:
     hostname: kafka-manager
     ports:
       - "9000:9000"
+    mem_limit: 300m
     depends_on:
       - zookeeper-1
       - zookeeper-2
