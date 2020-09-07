@@ -116,16 +116,6 @@ Verify metrics ingestion in Splunk:
 | mcatalog values(metric_name) as metric_name, values(_dims) where index=telegraf_kafka
 ```
 
-#### Metrics Workspace application
-
-Install the Metrics Workspace application in Splunk:
-
-https://splunkbase.splunk.com/app/4192/
-
-![screen1](./img/screen001.png)
-
-The Metrics Workspace application is not mandatory at all, but it very useful and convenient to explore and visualize available metrics in a friendly and efficient UI.
-
 #### Kafka Smart Monitoring application
 
 Once your environment is up, download the Kafka Monitoring Application, install from Splunk Web UI, ideally restart Splunk via the UI and appreciate a fully ready, up and running monitoring solution.
