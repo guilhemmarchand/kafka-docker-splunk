@@ -110,7 +110,7 @@ services:
         env: "env,label,host"
     ports:
       - "19092:19092"
-    mem_limit: 300m
+    mem_limit: 600m
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -142,7 +142,7 @@ services:
         env: "env,label,host"
     ports:
       - "29092:29092"
-    mem_limit: 300m
+    mem_limit: 600m
     depends_on:
       - kafka-1
     volumes:
@@ -172,7 +172,7 @@ services:
         env: "env,label,host"
     ports:
       - "39092:39092"
-    mem_limit: 300m
+    mem_limit: 600m
     depends_on:
       - kafka-1
       - kafka-2
@@ -191,19 +191,9 @@ services:
   kafka-connect-1:
     image: confluentinc/cp-kafka-connect:latest
     hostname: kafka-connect-1
-    logging:
-      driver: splunk
-      options:
-        splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
-        splunk-url: "https://splunk:8088"
-        splunk-insecureskipverify: "true"
-        splunk-verify-connection: "false"
-        splunk-sourcetype: "docker:kafka:connect"
-        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
-        env: "env,label,host"
     ports:
       - "18082:18082"
-    mem_limit: 300m
+    mem_limit: 1500m
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -223,78 +213,6 @@ services:
       host: "kafka-connect-1"
       KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
     command: "/usr/bin/connect-distributed /etc/kafka-connect/config/connect-distributed.properties-kafka-connect-1"
-
-  kafka-connect-2:
-    image: confluentinc/cp-kafka-connect:latest
-    hostname: kafka-connect-2
-    logging:
-      driver: splunk
-      options:
-        splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
-        splunk-url: "https://splunk:8088"
-        splunk-insecureskipverify: "true"
-        splunk-verify-connection: "false"
-        splunk-sourcetype: "docker:kafka:connect"
-        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
-        env: "env,label,host"
-    mem_limit: 300m
-    ports:
-      - "28082:28082"
-    depends_on:
-      - zookeeper-1
-      - zookeeper-2
-      - zookeeper-3
-      - kafka-1
-      - kafka-2
-      - kafka-3
-    volumes:
-      - ../jolokia:/opt/jolokia
-      - ../splunk-kafka-connect:/etc/kafka-connect/jars/splunk-kafka-connect
-      - ../kafka-connect-datagen/confluentinc-kafka-connect-datagen:/etc/kafka-connect/jars/confluentinc-kafka-connect-datagen
-      - ../kafka-connect-syslog/confluentinc-kafka-connect-syslog:/etc/kafka-connect/jars/confluentinc-kafka-connect-syslog
-      - ../kafka-connect:/etc/kafka-connect/config
-    environment:
-      env: "docker_env"
-      label: "testing"
-      host: "kafka-connect-2"
-      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
-    command: "/usr/bin/connect-distributed /etc/kafka-connect/config/connect-distributed.properties-kafka-connect-2"
-
-  kafka-connect-3:
-    image: confluentinc/cp-kafka-connect:latest
-    hostname: kafka-connect-3
-    logging:
-      driver: splunk
-      options:
-        splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
-        splunk-url: "https://splunk:8088"
-        splunk-insecureskipverify: "true"
-        splunk-verify-connection: "false"
-        splunk-sourcetype: "docker:kafka:connect"
-        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
-        env: "env,label,host"
-    mem_limit: 300m
-    ports:
-      - "38082:38082"
-    depends_on:
-      - zookeeper-1
-      - zookeeper-2
-      - zookeeper-3
-      - kafka-1
-      - kafka-2
-      - kafka-3
-    volumes:
-      - ../jolokia:/opt/jolokia
-      - ../splunk-kafka-connect:/etc/kafka-connect/jars/splunk-kafka-connect
-      - ../kafka-connect-datagen/confluentinc-kafka-connect-datagen:/etc/kafka-connect/jars/confluentinc-kafka-connect-datagen
-      - ../kafka-connect-syslog/confluentinc-kafka-connect-syslog:/etc/kafka-connect/jars/confluentinc-kafka-connect-syslog
-      - ../kafka-connect:/etc/kafka-connect/config
-    environment:
-      env: "docker_env"
-      label: "testing"
-      host: "kafka-connect-3"
-      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.6.0-agent.jar=port=8778,host=0.0.0.0"
-    command: "/usr/bin/connect-distributed /etc/kafka-connect/config/connect-distributed.properties-kafka-connect-3"
 
   schema-registry:
     image: confluentinc/cp-schema-registry:latest
