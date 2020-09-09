@@ -16,7 +16,7 @@ services:
         env: "env,label,host"
     ports:
       - "12181:12181"
-    mem_limit: 300m
+    mem_limit: 600m
     volumes:
       - ../jolokia:/opt/jolokia
     environment:
@@ -46,7 +46,7 @@ services:
         env: "env,label,host"
     ports:
       - "22181:22181"
-    mem_limit: 300m
+    mem_limit: 600m
     volumes:
       - ../jolokia:/opt/jolokia
     depends_on:
@@ -78,7 +78,7 @@ services:
         env: "env,label,host"
     ports:
       - "32181:32181"
-    mem_limit: 300m
+    mem_limit: 600m
     depends_on:
       - zookeeper-2
     volumes:
@@ -110,7 +110,7 @@ services:
         env: "env,label,host"
     ports:
       - "19092:19092"
-    mem_limit: 600m
+    mem_limit: 1500m
     depends_on:
       - zookeeper-1
       - zookeeper-2
@@ -142,7 +142,7 @@ services:
         env: "env,label,host"
     ports:
       - "29092:29092"
-    mem_limit: 600m
+    mem_limit: 1500m
     depends_on:
       - kafka-1
     volumes:
@@ -172,7 +172,7 @@ services:
         env: "env,label,host"
     ports:
       - "39092:39092"
-    mem_limit: 600m
+    mem_limit: 1500m
     depends_on:
       - kafka-1
       - kafka-2
