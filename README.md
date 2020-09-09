@@ -47,7 +47,7 @@ Shall you want to send the metrics to a third party destination and/or using a d
 
 - Zookeeper cluster (3 nodes)
 - Kafka broker cluster (3 nodes)
-- Kafka connect cluster (3 nodes)
+- Kafka connect cluster (1 node, can be extended up to 3 or more with additional config)
 - Confluent schema-registry
 - Confluent kafka-rest
 - Confluent ksql-server
@@ -69,7 +69,7 @@ Several ports are exposed to the localhost, and need to be available on the mach
 
 - 12181 / 22181 / 32181 (Zookeeper)
 - 19092 / 29092 / 39092 (Kafka Brokers)
-- 18082 / 28082 / 38082 (Kafka Connect)
+- 18082 / 28082 / 38082 (Kafka Connect if up to 3 nodes)
 - 18081 (schema-registry)
 - 18088 (ksql-server)
 - 18089 (kafka-rest)
