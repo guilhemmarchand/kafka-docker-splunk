@@ -85,3 +85,6 @@ rest.advertised.host.name=kafka-connect-3
 # rest.advertised.host.name=localhost
 # rest.host.name=localhost
 
+# Confluent interceptors
+producer.interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor
+consumer.interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor
