@@ -2,6 +2,12 @@
 
 docker-compose up --no-start
 
+for container in splunk; do
+  docker-compose up -d $container
+  echo "Sleeping 15s..."
+  sleep 15
+done
+
 for container in zookeeper-1 zookeeper-2 zookeeper-3; do
   docker-compose up -d $container
 done

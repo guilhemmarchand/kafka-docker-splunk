@@ -1,5 +1,33 @@
-version: '2.4'
+version: '3.8'
+
+networks:
+
+  labnet:
+    driver: bridge
+    attachable: true
+
 services:
+
+  splunk:
+    image: splunk/splunk:latest
+    restart: "no"
+    hostname: splunk
+    ports:
+      - "8000:8000"
+      - "8089:8089"
+      - "9997:9997"
+      - "8080:8080"
+      - "8088:8088"
+    environment:
+      SPLUNK_START_ARGS: "--accept-license"
+      SPLUNK_PASSWORD: "ch@ngeM3"
+      SPLUNK_APPS_URL: "/tmp/kafka-sdm.tgz"
+    volumes:
+      - ../kafka-smart-monitoring/telegraf-kafka_1138.tgz:/tmp/kafka-sdm.tgz
+      - ../splunk/TA-telegraf-kafka:/opt/splunk/etc/apps/TA-telegraf-kafka
+      - ../splunk/TA-docker-kafka:/opt/splunk/etc/apps/TA-docker-kafka
+      - ../splunk/TA-confluent-interceptors:/opt/splunk/etc/apps/TA-confluent-interceptors
+      - ../splunk/container_share:/opt/splunk/container_share
 
   zookeeper-1:
     image: confluentinc/cp-zookeeper:latest
@@ -9,7 +37,7 @@ services:
       driver: splunk
       options:
         splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
-        splunk-url: "https://splunk:8088"
+        splunk-url: "https://localhost:8088"
         splunk-insecureskipverify: "true"
         splunk-verify-connection: "false"
         splunk-sourcetype: "docker:kafka:zookeeper"
@@ -20,6 +48,8 @@ services:
     mem_limit: 600m
     volumes:
       - ../jolokia:/opt/jolokia
+    depends_on:
+      - splunk
     environment:
       env: "docker_env"
       label: "testing"
@@ -40,7 +70,7 @@ services:
       driver: splunk
       options:
         splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
-        splunk-url: "https://splunk:8088"
+        splunk-url: "https://localhost:8088"
         splunk-insecureskipverify: "true"
         splunk-verify-connection: "false"
         splunk-sourcetype: "docker:kafka:zookeeper"
@@ -73,7 +103,7 @@ services:
       driver: splunk
       options:
         splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
-        splunk-url: "https://splunk:8088"
+        splunk-url: "https://localhost:8088"
         splunk-insecureskipverify: "true"
         splunk-verify-connection: "false"
         splunk-sourcetype: "docker:kafka:zookeeper"
@@ -106,7 +136,7 @@ services:
       driver: splunk
       options:
         splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
-        splunk-url: "https://splunk:8088"
+        splunk-url: "https://localhost:8088"
         splunk-insecureskipverify: "true"
         splunk-verify-connection: "false"
         splunk-sourcetype: "docker:kafka:broker"
@@ -139,7 +169,7 @@ services:
       driver: splunk
       options:
         splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
-        splunk-url: "https://splunk:8088"
+        splunk-url: "https://localhost:8088"
         splunk-insecureskipverify: "true"
         splunk-verify-connection: "false"
         splunk-sourcetype: "docker:kafka:broker"
@@ -170,7 +200,7 @@ services:
       driver: splunk
       options:
         splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
-        splunk-url: "https://splunk:8088"
+        splunk-url: "https://localhost:8088"
         splunk-insecureskipverify: "true"
         splunk-verify-connection: "false"
         splunk-sourcetype: "docker:kafka:broker"
@@ -229,7 +259,7 @@ services:
       driver: splunk
       options:
         splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
-        splunk-url: "https://splunk:8088"
+        splunk-url: "https://localhost:8088"
         splunk-insecureskipverify: "true"
         splunk-verify-connection: "false"
         splunk-sourcetype: "docker:confluent:schema-registry"
@@ -261,7 +291,7 @@ services:
       driver: splunk
       options:
         splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
-        splunk-url: "https://splunk:8088"
+        splunk-url: "https://localhost:8088"
         splunk-insecureskipverify: "true"
         splunk-verify-connection: "false"
         splunk-sourcetype: "docker:confluent:ksql-server"
@@ -326,7 +356,7 @@ services:
       driver: splunk
       options:
         splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
-        splunk-url: "https://splunk:8088"
+        splunk-url: "https://localhost:8088"
         splunk-insecureskipverify: "true"
         splunk-verify-connection: "false"
         splunk-sourcetype: "docker:telegraf"
@@ -355,7 +385,7 @@ services:
       driver: splunk
       options:
         splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
-        splunk-url: "https://splunk:8088"
+        splunk-url: "https://localhost:8088"
         splunk-insecureskipverify: "true"
         splunk-verify-connection: "false"
         splunk-sourcetype: "docker:burrow"
@@ -387,7 +417,7 @@ services:
       driver: splunk
       options:
         splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
-        splunk-url: "https://splunk:8088"
+        splunk-url: "https://localhost:8088"
         splunk-insecureskipverify: "true"
         splunk-verify-connection: "false"
         splunk-sourcetype: "docker:kafka-monitor"
@@ -417,7 +447,7 @@ services:
       driver: splunk
       options:
         splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
-        splunk-url: "https://splunk:8088"
+        splunk-url: "https://localhost:8088"
         splunk-insecureskipverify: "true"
         splunk-verify-connection: "false"
         splunk-index: "confluent_interceptor_metrics"
@@ -453,20 +483,3 @@ services:
       KAFKA_MANAGER_AUTH_ENABLED: "true"
       KAFKA_MANAGER_USERNAME: "admin"
       KAFKA_MANAGER_PASSWORD: "ch@ngeM3"
-
-  splunk:
-    image: splunk/splunk:latest
-    restart: "no"
-    hostname: splunk
-    ports:
-      - "8000:8000"
-      - "8089:8089"
-      - "9997:9997"
-      - "8080:8080"
-    environment:
-      SPLUNK_START_ARGS: "--accept-license"
-      SPLUNK_PASSWORD: "ch@ngeM3"
-    volumes:
-      - ../splunk/TA-telegraf-kafka:/opt/splunk/etc/apps/TA-telegraf-kafka
-      - ../splunk/container_share:/opt/splunk/container_share
-      - ../splunk/TA-docker-kafka:/opt/splunk/etc/apps/TA-docker-kafka

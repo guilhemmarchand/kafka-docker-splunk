@@ -1,6 +1,6 @@
 # kafka-docker-splunk
 
-Copyright 2018-2019 Guilhem Marchand
+Copyright 2018-2020 Guilhem Marchand
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ This repository contains docker-compose templates that will create ouf of the bo
 
 Its purpose is first of all to qualify, test and demonstrate the monitoring of a full Kafka/Confluent environment with Splunk.
 
-The following diagram represents the metrics data collection:
+**The following diagram represents the metrics data collection:**
 
 ![screen1](./img/overview_diagram.png)
 
-Two docker-compose.yml templates are provided in the following directories:
+**Two docker-compose.yml templates are provided in the following directories:**
 
 [./template_docker_splunk_ondocker](./template_docker_splunk_ondocker/)
 
@@ -32,9 +32,9 @@ Two docker-compose.yml templates are provided in the following directories:
 
 The first template suffixed by "_ondocker" will run a Splunk standalone instance in Docker, while the second will attempt to send metrics to your local Splunk instance. (using the dockerhost container to communicate with your local guest machine)
 
-In the case of the template running Splunk on Docker, the setup of Splunk (index definition, HEC token creation...) is entirely automatic.
+In the case of the template running Splunk on Docker, the setup of Splunk (index definition, HEC token creation, installation of Kafka Smart Monitoring) is entirely automatic.
 
-In both cases, the target for HEC (your Splunk server running the HTTP Event Collector) and the token are variables loaded as environment variables in the Telegraf containers:
+In both cases, the target for HEC telegraf metrics forwarding (your Splunk server running the HTTP Event Collector) and the token are variables loaded as environment variables in the Telegraf containers:
 
 ```
       SPLUNK_HEC_URL: "https://dockerhost:8088"
@@ -42,6 +42,20 @@ In both cases, the target for HEC (your Splunk server running the HTTP Event Col
 ```
 
 Shall you want to send the metrics to a third party destination and/or using a different token value, modify these values in the docker-compose.yml file.
+
+For the purpose of the template, we hande as well the forwarding of the container logs running our Kafka components to Splunk using the Docker Splunk logging driver, such that both metrics and logs are provided to Splunk in a automated and easy way.
+
+If you use the localhost template, you need to handle the HEC token definition, such as defined in the YAML file:
+
+```
+      splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
+      splunk-url: "https://localhost:8088"
+
+```
+
+Consult the directories in [./splunk](./splunk/) to consult configuration files and examples.
+
+If you use the ondocker template to run the Splunk instance in Docker, you do not need to do anything.
 
 ## Included containers
 
@@ -61,12 +75,12 @@ In addition, these templates will run a few containers that will create a Kafka 
 
 ### Requirements
 
-To be able to use these templates, you need:
+**To be able to use these templates, you need:**
 
 - docker
 - docker-compose
 
-Several ports are exposed to the localhost, and need to be available on the machine:
+**Several ports are exposed to the localhost, and need to be available on the machine:**
 
 - 12181 / 22181 / 32181 (Zookeeper)
 - 19092 / 29092 / 39092 (Kafka Brokers)
@@ -83,13 +97,13 @@ Some resources (CPU/Memory)... this runs perfectly fine on my laptop... (but con
 
 ### Using the templates
 
-Start by cloning the repository:
+**Start by cloning the repository:**
 
 ```
 git clone git@github.com:guilhemmarchand/kafka-docker-splunk.git
 ```
 
-Then to start a template:
+**Then to start a template:**
 
 ```
 cd template_docker_splunk_ondocker
@@ -115,6 +129,13 @@ Verify metrics ingestion in Splunk:
 
 ```
 | mcatalog values(metric_name) as metric_name, values(_dims) where index=telegraf_kafka
+
+```
+
+Or using the msearch command:
+
+```
+| msearch index=telegraf_kafka filter="metric_name="*""
 ```
 
 #### Kafka Smart Monitoring application
