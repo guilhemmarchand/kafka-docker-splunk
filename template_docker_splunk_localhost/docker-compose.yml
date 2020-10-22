@@ -1,11 +1,5 @@
 version: '3.8'
 
-networks:
-  
-  labnet:
-    driver: bridge
-    attachable: true
-
 services:
 
   zookeeper-1:
