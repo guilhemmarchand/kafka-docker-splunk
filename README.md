@@ -80,6 +80,14 @@ In addition, these templates will run a few containers that will create a Kafka 
 - docker
 - docker-compose
 
+**Docker-CE is recommanded:**
+
+- https://docs.docker.com/engine/install/ubuntu/
+
+**To install docker-compose:**
+
+- https://docs.docker.com/compose/install/
+
 **Several ports are exposed to the localhost, and need to be available on the machine:**
 
 - 12181 / 22181 / 32181 (Zookeeper)
@@ -93,7 +101,7 @@ In addition, these templates will run a few containers that will create a Kafka 
 - 7070 (kafka stream sample app)
 - 8000 / 8089 / 8088 / 9997 (Splunk, only if using _ondocker template)
 
-Some resources (CPU/Memory)... this runs perfectly fine on my laptop... (but consumes lots of battery yes...)
+This can be resource intensive with if you run heavy benchmarks.
 
 ### Using the templates
 
@@ -140,9 +148,11 @@ Or using the msearch command:
 
 #### Kafka Smart Monitoring application
 
-Once your environment is up, download the Kafka Monitoring Application, install from Splunk Web UI, ideally restart Splunk via the UI and appreciate a fully ready, up and running monitoring solution.
+If you use a local or remote Splunk instance, download and install the application from Splunk Base:
 
 https://splunkbase.splunk.com/app/4268/
+
+If you use Splunk on Docker, the app is already installed for you.
 
 ![telegraf-kafka.png](./img/telegraf-kafka.png)
 
