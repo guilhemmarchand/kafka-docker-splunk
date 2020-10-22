@@ -51,9 +51,10 @@ Shall you want to send the metrics to a third party destination and/or using a d
 - Confluent schema-registry
 - Confluent kafka-rest
 - Confluent ksql-server
-- Kafka LinkedIn SLA monitor container
+- Kafka Xinfra SLA monitor container
 - Telegraf container polling and sending to your Splunk metric store
 - Yahoo Kafka Manager (port exposed to localhost:9000)
+- Confluent Interceptor console collector
 - Kafka Burrow Consumer lag Monitoring (port exposed to localhost:9001, login: admin, password: ch@ngeM3)
 
 In addition, these templates will run a few containers that will create a Kafka stream from Confluent example repositories, to create a consumer we can monitor and generate some activities in Kafka.
