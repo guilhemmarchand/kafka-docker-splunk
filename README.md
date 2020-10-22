@@ -120,13 +120,13 @@ cd template_docker_splunk_ondocker
 
 Docker will download any image required, and the start the full environment.
 
-Splunk requires around 30 seconds to start, you can verify the instance state:
+**Splunk requires around 30 seconds to start, you can verify the instance state:**
 
 ```
 docker-compose logs splunk
 ```
 
-Once Splunk has been started, you can access to Splunk Web:
+**Once Splunk has been started, you can access to Splunk Web:**
 
 http://localhost:8000
 
