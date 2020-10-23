@@ -160,42 +160,98 @@ If you use Splunk on Docker, the app is already installed for you.
 
 If you are using the _ondocker template, you can easily make files available to the container:
 
-You can use the splunk/container_share directory to share files with the splunk docker container (in /opt/splunk/container_share) for ease.
+You can use the splunk/container_share directory to share files with the splunk docker container. (in /opt/splunk/container_share)
 
-This is specially useful if you want to run ITSI.
+##### Performing a produce / consume demo with Kafka Connect and Splunk Connect for Kafka
 
-#### ITSI module for Kafka Smart Monitoring
+**In addition with bootstraping a Kafka environment, you can easily use these templates to produce and consume data for testing or demo purposes.**
 
-If you deployed ITSI, or if you are running ITSI on the Splunk target instance, download and install the Kafka module:
+The following configuration is automatically made available to the Splunk instance you run it on Docker:
 
-https://splunkbase.splunk.com/app/4261/
+- ./splunk/TA-kafka-demo](./splunk/TA-kafka-demo)
 
-Restart Splunk after the installation, you can start creating the entities using the builtin entities discovery, and create services with the builtin service templaces.
+This configuration defines a new HEC token and an index called "kafka_demo", if you use a local or remote Splunk instance, you need to deploy this or adapt the next commands.
 
-![service_analyser.png](./img/service_analyser.png)
+**First, let's create a new Sink connector that will consume a topic and forward to Splunk, for the ease of the demo we use the HEC event endpoint:**
+
+*Exec into the kafka-connect-1 container:*
+
+```
+docker-compose exec kafka-connect-1 /bin/bash
+```
+
+*For Splunk on Docker template*
+
+```
+curl localhost:18082/connectors -X POST -H "Content-Type: application/json" -d '{
+"name": "sink-splunk-demo",
+"config": {
+   "connector.class": "com.splunk.kafka.connect.SplunkSinkConnector",
+   "tasks.max": "3",
+   "topics":"kafka_demo_topic",
+   "splunk.hec.uri": "https://splunk:8088",
+   "splunk.hec.token": "1f2e3966-14ad-11eb-9bfa-acde48001122",
+   "splunk.hec.raw": "false",
+   "splunk.hec.ssl.validate.certs": "false"
+  }
+}'
+```
+
+*For Splunk on localhost template*
+
+```
+curl localhost:18082/connectors -X POST -H "Content-Type: application/json" -d '{
+"name": "sink-splunk-demo",
+"config": {
+   "connector.class": "com.splunk.kafka.connect.SplunkSinkConnector",
+   "tasks.max": "3",
+   "topics":"kafka_demo_topic",
+   "splunk.hec.uri": "https://dockerhost:8088",
+   "splunk.hec.token": "1f2e3966-14ad-11eb-9bfa-acde48001122",
+   "splunk.hec.raw": "false",
+   "splunk.hec.ssl.validate.certs": "false"
+  }
+}'
+```
+
+*Note: if you use a remote Splunk, adapth the splunk.hec.uri to match the IP address of the HEC endpoint, which must be accessible to the container!*
+
+**We will use a builtin Kafka data generator to produce messages in the topic kafka_demo_topic:**
+
+*Note: you will need to unset KAFKA_OPTS env variable to avoid a conflict with jolokia with is already running*
+
+```
+unset KAFKA_OPTS
+```
+
+**Add the class path to get Confluent Interceptors metrics too and run the data gen:**
+
+```
+export CLASSPATH=/usr/share/java/monitoring-interceptors/monitoring-interceptors-6.0.0.jar
+
+/usr/bin/kafka-producer-perf-test --topic kafka_demo_topic --num-records 10000000 --record-size 1000 --throughput 10000 --producer-props bootstrap.servers="kafka-1:19092,kafka-2:29092,kafka-3:39092" interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor acks=all
+```
+
+**Very quickly activity will appear in the Kafka environment, such as incoming and outgoing traffic, as well as consumer lag monitoring from Interceptors and every other metrics:**
+
+![demo1](./img/demo1.png)
+
+![demo2](./img/demo2.png)
+
+**Events are indexed in Splunk:**
+
+```
+index=kafka_demo
+```
+
+**For more advanced data ingestion demo and testing, view:**
+
+- https://github.com/guilhemmarchand/kafka-demo-cookbook
 
 #### To destroy the environment:
 
-Finally, you can totally destroy the environment:
+To totally destroy the environment:
 
 ```
 ./destroy.sh
 ```
-
-#### What about event logging?
-
-This repository does not manage the indexing of event logs from the different components, the aspects are entirely taken in charge by the Kafka Smart Monitoring application, and the ITSI Module for Kafka Smart Monitoring.
-
-See for more information:
-
-https://splunk-guide-for-kafka-monitoring.readthedocs.io
-
-https://github.com/guilhemmarchand/splunk-guide-for-kafka-monitoring/
-
-#### Traditional dedicated, Kubernetes, real-world configuration and Production ready
-
-The purpose of these templates is to demonstrate and/or build a easy quick lab in a minute.
-
-Real World instructions and templates for a Production ready deployment, be in Kubernetes or traditional dedicated servers, are covered in the following repository:
-
-https://github.com/guilhemmarchand/splunk-guide-for-kafka-monitoring/

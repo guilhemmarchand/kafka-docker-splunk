@@ -20,6 +20,7 @@ services:
       - ../kafka-smart-monitoring/telegraf-kafka_1138.tgz:/tmp/kafka-sdm.tgz
       - ../splunk/TA-telegraf-kafka:/opt/splunk/etc/apps/TA-telegraf-kafka
       - ../splunk/TA-docker-kafka:/opt/splunk/etc/apps/TA-docker-kafka
+      - ../splunk/TA-kafka-demo:/opt/splunk/etc/apps/TA-kafka-demo      
       - ../splunk/TA-confluent-interceptors:/opt/splunk/etc/apps/TA-confluent-interceptors
       - ../splunk/container_share:/opt/splunk/container_share
 
@@ -222,6 +223,16 @@ services:
     image: confluentinc/cp-kafka-connect:latest
     restart: "no"
     hostname: kafka-connect-1
+    logging:
+      driver: splunk
+      options:
+        splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
+        splunk-url: "https://localhost:8088"
+        splunk-insecureskipverify: "true"
+        splunk-verify-connection: "false"
+        splunk-sourcetype: "docker:kafka:connect"
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+        env: "env,label,host"
     ports:
       - "18082:18082"
     mem_limit: 1500m
@@ -440,7 +451,7 @@ services:
     logging:
       driver: splunk
       options:
-        splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
+        splunk-token: "719c9258-14b5-11eb-a267-acde48001122"
         splunk-url: "https://localhost:8088"
         splunk-insecureskipverify: "true"
         splunk-verify-connection: "false"

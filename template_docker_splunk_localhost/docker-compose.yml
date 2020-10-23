@@ -446,7 +446,7 @@ services:
     logging:
       driver: splunk
       options:
-        splunk-token: "11113ee7-919e-4dc3-bde6-da10a2ac6709"
+        splunk-token: "719c9258-14b5-11eb-a267-acde48001122"
         splunk-url: "https://host.docker.internal:8088"
         splunk-insecureskipverify: "true"
         splunk-verify-connection: "false"
