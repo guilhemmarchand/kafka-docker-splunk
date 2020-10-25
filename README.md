@@ -168,7 +168,7 @@ You can use the splunk/container_share directory to share files with the splunk 
 
 The following configuration is automatically made available to the Splunk instance you run it on Docker:
 
-- ./splunk/TA-kafka-demo](./splunk/TA-kafka-demo)
+- [./splunk/TA-kafka-demo](./splunk/TA-kafka-demo)
 
 This configuration defines a new HEC token and an index called "kafka_demo", if you use a local or remote Splunk instance, you need to deploy this or adapt the next commands.
 
