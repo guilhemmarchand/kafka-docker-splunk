@@ -70,6 +70,7 @@ If you use the ondocker template to run the Splunk instance in Docker, you do no
 - Yahoo Kafka Manager (port exposed to localhost:9000)
 - Confluent Interceptor console collector
 - Kafka Burrow Consumer lag Monitoring (port exposed to localhost:9001, login: admin, password: ch@ngeM3)
+- Kafka data gen container for advanced demo and benchmark (see https://github.com/guilhemmarchand/kafka-demo-cookbook)
 
 In addition, these templates will run a few containers that will create a Kafka stream from Confluent example repositories, to create a consumer we can monitor and generate some activities in Kafka.
 
@@ -255,3 +256,9 @@ To totally destroy the environment:
 ```
 ./destroy.sh
 ```
+
+#### Advanced demo and consuming benchmarking
+
+For more advanced demo and benchmarks on top of this framework, see:
+
+- https://github.com/guilhemmarchand/kafka-demo-cookbook
