@@ -483,3 +483,17 @@ services:
       KAFKA_MANAGER_AUTH_ENABLED: "true"
       KAFKA_MANAGER_USERNAME: "admin"
       KAFKA_MANAGER_PASSWORD: "ch@ngeM3"
+
+  kafka-data-gen:
+    image: guilhemmarchand/kafka-data-gen:latest
+    restart: "no"
+    hostname: kafka-data-gen
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    command: "tail -f /dev/null"
+    
