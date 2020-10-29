@@ -2,31 +2,26 @@
 
 docker-compose up --no-start
 
-for container in splunk; do
-  docker-compose up -d $container
-  echo "Sleeping 15s..."
-  sleep 15
-done
+echo "Starting up Splunk container..."
+docker-compose up -d --no-deps splunk
 
-for container in zookeeper-1 zookeeper-2 zookeeper-3; do
-  docker-compose up -d $container
-done
+echo "Sleeping 30s..."
 
-echo "Sleeping 10s..."
-sleep 10
-
-for container in kafka-1 kafka-2 kafka-3; do
-  docker-compose up -d $container
-done
+docker-compose up -d zookeeper-1
+docker-compose up -d zookeeper-2
+docker-compose up -d zookeeper-3
 
 echo "Sleeping 10s..."
 sleep 10
 
-for container in kafka-connect-1; do
-  docker-compose up -d $container
-  echo "Sleeping 5s..."
-  sleep 5
-done
+docker-compose up -d kafka-1
+docker-compose up -d kafka-2
+docker-compose up -d kafka-3
+
+echo "Sleeping 10s..."
+sleep 10
+
+docker-compose up -d  kafka-connect-1
 
 echo "Sleeping 60s..."
 sleep 60
