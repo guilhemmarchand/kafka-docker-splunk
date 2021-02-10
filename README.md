@@ -129,7 +129,7 @@ docker-compose logs splunk
 
 **Once Splunk has been started, you can access to Splunk Web:**
 
-http://localhost:8000
+https://localhost:8000
 
 - login: admin
 - password: ch@ngeM3
