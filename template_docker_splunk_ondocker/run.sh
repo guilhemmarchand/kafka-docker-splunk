@@ -6,6 +6,7 @@ echo "Starting up Splunk container..."
 docker-compose up -d --no-deps splunk
 
 echo "Sleeping 30s..."
+sleep 30
 
 docker-compose up -d zookeeper-1
 docker-compose up -d zookeeper-2
