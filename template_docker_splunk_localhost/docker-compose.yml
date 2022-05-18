@@ -40,7 +40,7 @@ services:
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
       ZOOKEEPER_SERVERS: zookeeper-1:22888:23888;zookeeper-2:32888:33888;zookeeper-3:42888:43888
-      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-mule-1.7.1-agent.jar=port=8778,host=0.0.0.0"
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.7.1.jar=port=8778,host=0.0.0.0"
 
   zookeeper-2:
     image: confluentinc/cp-zookeeper:latest
@@ -73,7 +73,7 @@ services:
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
       ZOOKEEPER_SERVERS: zookeeper-1:22888:23888;zookeeper-2:32888:33888;zookeeper-3:42888:43888
-      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-mule-1.7.1-agent.jar=port=8778,host=0.0.0.0"
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.7.1.jar=port=8778,host=0.0.0.0"
 
   zookeeper-3:
     image: confluentinc/cp-zookeeper:latest
@@ -106,7 +106,7 @@ services:
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
       ZOOKEEPER_SERVERS: zookeeper-1:22888:23888;zookeeper-2:32888:33888;zookeeper-3:42888:43888
-      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-mule-1.7.1-agent.jar=port=8778,host=0.0.0.0"
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.7.1.jar=port=8778,host=0.0.0.0"
 
   kafka-1:
     image: confluentinc/cp-kafka:latest
@@ -138,7 +138,7 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:12181,zookeeper-2:22181,zookeeper-3:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:19092
-      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-mule-1.7.1-agent.jar=port=8778,host=0.0.0.0"
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.7.1.jar=port=8778,host=0.0.0.0"
       JMX_PORT: "9999"
 
   kafka-2:
@@ -169,7 +169,7 @@ services:
       KAFKA_BROKER_ID: 2
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:12181,zookeeper-2:22181,zookeeper-3:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:29092
-      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-mule-1.7.1-agent.jar=port=8778,host=0.0.0.0"
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.7.1.jar=port=8778,host=0.0.0.0"
       JMX_PORT: "9999"
 
   kafka-3:
@@ -201,7 +201,7 @@ services:
       KAFKA_BROKER_ID: 3
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:12181,zookeeper-2:22181,zookeeper-3:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:39092
-      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-mule-1.7.1-agent.jar=port=8778,host=0.0.0.0"
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.7.1.jar=port=8778,host=0.0.0.0"
       JMX_PORT: "9999"
 
   kafka-connect-1:
@@ -238,7 +238,7 @@ services:
       env: "docker_env"
       label: "testing"
       host: "kafka-connect-1"
-      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-mule-1.7.1-agent.jar=port=8778,host=0.0.0.0"
+      KAFKA_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.7.1.jar=port=8778,host=0.0.0.0"
     command: "/usr/bin/connect-distributed /etc/kafka-connect/config/connect-distributed.properties-kafka-connect-1"
 
   schema-registry:
@@ -271,7 +271,7 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:29092,PLAINTEXT://kafka-3:39092"
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:18081"
-      SCHEMA_REGISTRY_OPTS: "-javaagent:/opt/jolokia/jolokia-mule-1.7.1-agent.jar=port=8778,host=0.0.0.0"
+      SCHEMA_REGISTRY_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.7.1.jar=port=8778,host=0.0.0.0"
 
   ksql-server:
     image: confluentinc/cp-ksql-server:latest
@@ -303,7 +303,7 @@ services:
       KSQL_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:29092,PLAINTEXT://kafka-3:39092"
       KSQL_KSQL_SERVICE_ID: "confluent_standalone_1_"
       KSQL_LISTENERS: "http://0.0.0.0:18088"
-      KSQL_OPTS: "-javaagent:/opt/jolokia/jolokia-mule-1.7.1-agent.jar=port=8778,host=0.0.0.0"
+      KSQL_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.7.1.jar=port=8778,host=0.0.0.0"
 
   kafka-rest:
     image: confluentinc/cp-kafka-rest:latest
@@ -336,7 +336,7 @@ services:
       KAFKA_REST_ZOOKEEPER_CONNECT: "zookeeper-1:12181,zookeeper-2:22181,zookeeper-3:32181"
       KAFKA_REST_LISTENERS: "http://localhost:18089"
       KAFKA_REST_SCHEMA_REGISTRY_URL: "http://schema-registry:18083"
-      KAFKAREST_OPTS: "-javaagent:/opt/jolokia/jolokia-mule-1.7.1-agent.jar=port=8778,host=0.0.0.0"
+      KAFKAREST_OPTS: "-javaagent:/opt/jolokia/jolokia-jvm-1.7.1.jar=port=8778,host=0.0.0.0"
       KAFKA_REST_HOST_NAME: "kafka-rest"
 
   telegraf:
