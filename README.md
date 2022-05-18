@@ -16,7 +16,7 @@ limitations under the License.
 
 ## purpose:
 
-This repository contains docker-compose templates that will create ouf of the box a full Kafka Confluent OSS environment in Docker.
+This repository contains docker compose templates that will create ouf of the box a full Kafka Confluent OSS environment in Docker.
 
 Its purpose is first of all to qualify, test and demonstrate the monitoring of a full Kafka/Confluent environment with Splunk.
 
@@ -24,13 +24,13 @@ Its purpose is first of all to qualify, test and demonstrate the monitoring of a
 
 ![screen1](./img/overview_diagram.png)
 
-**Two docker-compose.yml templates are provided in the following directories:**
+**Two docker compose.yml templates are provided in the following directories:**
 
 [./template_docker_splunk_ondocker](./template_docker_splunk_ondocker/)
 
 [./template_docker_splunk_localhost](./template_docker_splunk_localhost/)
 
-The first template suffixed by "_ondocker" will run a Splunk standalone instance in Docker, while the second will attempt to send metrics to your local Splunk instance. (using the dockerhost container to communicate with your local guest machine)
+The first template suffixed by "\_ondocker" will run a Splunk standalone instance in Docker, while the second will attempt to send metrics to your local Splunk instance. (using the dockerhost container to communicate with your local guest machine)
 
 In the case of the template running Splunk on Docker, the setup of Splunk (index definition, HEC token creation, installation of Kafka Smart Monitoring) is entirely automatic.
 
@@ -41,7 +41,7 @@ In both cases, the target for HEC telegraf metrics forwarding (your Splunk serve
       SPLUNK_HEC_TOKEN: "205d43f1-2a31-4e60-a8b3-327eda49944a"
 ```
 
-Shall you want to send the metrics to a third party destination and/or using a different token value, modify these values in the docker-compose.yml file.
+Shall you want to send the metrics to a third party destination and/or using a different token value, modify these values in the docker compose.yml file.
 
 For the purpose of the template, we hande as well the forwarding of the container logs running our Kafka components to Splunk using the Docker Splunk logging driver, such that both metrics and logs are provided to Splunk in a automated and easy way.
 
@@ -79,13 +79,13 @@ In addition, these templates will run a few containers that will create a Kafka 
 **To be able to use these templates, you need:**
 
 - docker
-- docker-compose
+- docker compose
 
 **Docker-CE is recommanded:**
 
 - https://docs.docker.com/engine/install/ubuntu/
 
-**To install docker-compose:**
+**To install docker compose:**
 
 - https://docs.docker.com/compose/install/
 
@@ -100,7 +100,7 @@ In addition, these templates will run a few containers that will create a Kafka 
 - 9000 (kafka-manager)
 - 9002 (Burrow)
 - 7070 (kafka stream sample app)
-- 8000 / 8089 / 8088 / 9997 (Splunk, only if using _ondocker template)
+- 8000 / 8089 / 8088 / 9997 (Splunk, only if using \_ondocker template)
 
 This can be resource intensive with if you run heavy benchmarks.
 
@@ -124,7 +124,7 @@ Docker will download any image required, and the start the full environment.
 **Splunk requires around 30 seconds to start, you can verify the instance state:**
 
 ```
-docker-compose logs splunk
+docker compose logs splunk
 ```
 
 **Once Splunk has been started, you can access to Splunk Web:**
@@ -159,7 +159,7 @@ If you use Splunk on Docker, the app is already installed for you.
 
 #### Transfer files between host and the Splunk container
 
-If you are using the _ondocker template, you can easily make files available to the container:
+If you are using the \_ondocker template, you can easily make files available to the container:
 
 You can use the splunk/container_share directory to share files with the splunk docker container. (in /opt/splunk/container_share)
 
@@ -175,13 +175,13 @@ This configuration defines a new HEC token and an index called "kafka_demo", if 
 
 **First, let's create a new Sink connector that will consume a topic and forward to Splunk, for the ease of the demo we use the HEC event endpoint:**
 
-*Exec into the kafka-connect-1 container:*
+_Exec into the kafka-connect-1 container:_
 
 ```
-docker-compose exec kafka-connect-1 /bin/bash
+docker compose exec kafka-connect-1 /bin/bash
 ```
 
-*For Splunk on Docker template*
+_For Splunk on Docker template_
 
 ```
 curl localhost:18082/connectors -X POST -H "Content-Type: application/json" -d '{
@@ -198,7 +198,7 @@ curl localhost:18082/connectors -X POST -H "Content-Type: application/json" -d '
 }'
 ```
 
-*For Splunk on localhost template*
+_For Splunk on localhost template_
 
 ```
 curl localhost:18082/connectors -X POST -H "Content-Type: application/json" -d '{
@@ -215,11 +215,11 @@ curl localhost:18082/connectors -X POST -H "Content-Type: application/json" -d '
 }'
 ```
 
-*Note: if you use a remote Splunk, adapth the splunk.hec.uri to match the IP address of the HEC endpoint, which must be accessible to the container!*
+_Note: if you use a remote Splunk, adapth the splunk.hec.uri to match the IP address of the HEC endpoint, which must be accessible to the container!_
 
 **We will use a builtin Kafka data generator to produce messages in the topic kafka_demo_topic:**
 
-*Note: you will need to unset KAFKA_OPTS env variable to avoid a conflict with jolokia with is already running*
+_Note: you will need to unset KAFKA_OPTS env variable to avoid a conflict with jolokia with is already running_
 
 ```
 unset KAFKA_OPTS
