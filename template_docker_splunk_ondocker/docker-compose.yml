@@ -17,7 +17,7 @@ services:
       SPLUNK_PASSWORD: "ch@ngeM3"
       SPLUNK_APPS_URL: "/tmp/kafka-sdm.tgz"
     volumes:
-      - ../kafka-smart-monitoring/telegraf-kafka_1138.tgz:/tmp/kafka-sdm.tgz
+      - ../kafka-smart-monitoring/telegraf-kafka_1141.tgz:/tmp/kafka-sdm.tgz
       - ../splunk/TA-telegraf-kafka:/opt/splunk/etc/apps/TA-telegraf-kafka
       - ../splunk/TA-docker-kafka:/opt/splunk/etc/apps/TA-docker-kafka
       - ../splunk/TA-kafka-demo:/opt/splunk/etc/apps/TA-kafka-demo      
